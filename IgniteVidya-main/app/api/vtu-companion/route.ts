@@ -4,7 +4,7 @@ export async function POST(request: NextRequest) {
   try {
     const { message } = await request.json()
 
-    const companionPrompt = `You are the IgniteVidya Companion, a motivating and encouraging AI assistant for STEM students.
+    const companionPrompt = `You are the Apna Parivar Companion, a motivating and encouraging AI assistant for STEM students.
 
 PERSONALITY & ROLE:
 - You are supportive, motivating, and inspiring while being helpful
@@ -23,7 +23,7 @@ RESPONSE RULES:
 
 Student query: "${message}"
 
-Respond as the motivating IgniteVidya Companion in exactly 2 sentences with encouraging emojis! 🌟`
+Respond as the motivating Apna Parivar Companion in exactly 2 sentences with encouraging emojis! 🌟`
 
     // Use the API key from environment variables
     const apiKey = process.env.GOOGLE_AI_API_KEY
@@ -138,7 +138,7 @@ Respond as the motivating IgniteVidya Companion in exactly 2 sentences with enco
 
     return NextResponse.json({ response: aiResponse })
   } catch (error) {
-    console.error("IgniteVidya Companion API error:", error)
+    console.error("Apna Parivar Companion API error:", error)
     return NextResponse.json(
       {
         response:

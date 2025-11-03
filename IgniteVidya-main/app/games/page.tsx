@@ -32,7 +32,7 @@ export default function GamesPage() {
             STEM Games Platform
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Welcome to IgniteVidya Games - Your STEM Learning Adventure
+            Welcome to Apna Parivar Games - Your STEM Learning Adventure
           </p>
         </motion.div>
 

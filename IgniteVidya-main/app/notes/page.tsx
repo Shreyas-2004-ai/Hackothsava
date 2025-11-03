@@ -382,7 +382,7 @@ export default function NotesPage() {
         <footer className="py-3 md:py-6 px-2 md:px-4 border-t border-zinc-200 dark:border-zinc-800 mt-12">
           <div className="max-w-6xl mx-auto text-center">
             <p className="text-xs text-zinc-600 dark:text-zinc-400">
-              © 2025 IgniteVidya. All rights reserved.
+              © 2025 Apna Parivar. All rights reserved.
             </p>
           </div>
         </footer>

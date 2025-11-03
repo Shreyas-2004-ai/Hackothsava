@@ -405,7 +405,7 @@ export default function ProjectsPage() {
         <footer className="py-6 mt-16 border-t border-zinc-200 dark:border-zinc-800">
           <div className="max-w-6xl mx-auto text-center">
             <p className="text-xs text-zinc-600 dark:text-zinc-400">
-              © 2024 IgniteVidya. All rights reserved.
+              © 2024 Apna Parivar. All rights reserved.
             </p>
           </div>
         </footer>

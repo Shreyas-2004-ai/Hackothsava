@@ -49,7 +49,7 @@ export default function LoginPage() {
             <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center">
               <img 
                 src="/vtu-logo.png" 
-                alt="IgniteVidya Logo"
+                alt="Apna Parivar Logo"
                 className="w-16 h-16 object-contain"
                 onError={(e) => {
                   // Fallback to icon if image fails to load
@@ -60,7 +60,7 @@ export default function LoginPage() {
               <Brain className="h-10 w-10 text-blue-600 dark:text-blue-400 hidden" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">IgniteVidya</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Apna Parivar</h1>
           <p className="text-gray-600 dark:text-gray-400">Family connections for all</p>
         </div>
 
@@ -154,10 +154,10 @@ export default function LoginPage() {
         <Card className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
           <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Demo Credentials</h3>
           <div className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
-            <div><strong>Student:</strong> student@ignitevidya.com / password123</div>
-            <div><strong>Teacher:</strong> teacher@ignitevidya.com / password123</div>
+            <div><strong>Student:</strong> student@apnaparivar.com / password123</div>
+            <div><strong>Teacher:</strong> teacher@apnaparivar.com / password123</div>
             <div><strong>School Admin:</strong> admin@school.com / password123</div>
-            <div><strong>System Admin:</strong> sysadmin@ignitevidya.com / password123</div>
+            <div><strong>System Admin:</strong> sysadmin@apnaparivar.com / password123</div>
           </div>
         </Card>
       </motion.div>

@@ -1010,7 +1010,7 @@ export default function HomePage() {
               Latest News
             </h2>
             <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-              Stay updated with the latest from IgniteVidya
+              Stay updated with the latest from Apna Parivar
             </p>
           </motion.div>
 
@@ -1103,7 +1103,7 @@ export default function HomePage() {
                       </h3>
                       <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-3">
                         Congratulations to our students who excelled in the
-                        National Mathematics Olympiad using IgniteVidya.
+                        National Mathematics Olympiad using Apna Parivar.
                       </p>
                       <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500">
                         <span>1 week ago</span>
@@ -1132,7 +1132,7 @@ export default function HomePage() {
               READY TO IGNITE YOUR STEM JOURNEY?
             </h2>
             <p className="text-sm md:text-lg text-zinc-600 dark:text-zinc-400 mb-4 md:mb-6 max-w-2xl mx-auto px-2 font-mono tracking-wide pixel-text">
-              JOIN THOUSANDS OF STUDENTS WHO ARE ALREADY USING IGNITEVIDYA TO
+              JOIN THOUSANDS OF FAMILIES WHO ARE ALREADY USING APNA PARIVAR TO
               MASTER STEM SUBJECTS THROUGH INTERACTIVE LEARNING.
             </p>
             <Button
@@ -1161,7 +1161,7 @@ export default function HomePage() {
               <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 flex items-center justify-center">
                 <img
                   src="/superBrain.png"
-                  alt="IgniteVidya SuperBrain"
+                  alt="Apna Parivar SuperBrain"
                   className="w-full h-full object-cover"
                 />
               </div>
