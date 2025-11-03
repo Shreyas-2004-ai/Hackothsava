@@ -5,17 +5,26 @@ export async function POST(request: NextRequest) {
     const { image } = await request.json();
 
     if (!image) {
+      console.error("No image data received");
       return NextResponse.json({ success: false, error: "No image provided" });
     }
+
+    console.log("Image data length:", image.length);
 
     const googleApiKey = process.env.GOOGLE_AI_API_KEY;
 
     if (!googleApiKey) {
+      console.error("GOOGLE_AI_API_KEY not found in environment");
       return NextResponse.json({
         success: false,
         error: "API key not configured",
       });
     }
+
+    console.log("API key found, making request to Gemini...");
+
+    // Add a small delay to help with rate limiting (free tier: 15 RPM)
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const prompt = `You are a smart AI tutor. Analyze this handwritten/drawn content and help the student.
 
@@ -66,9 +75,23 @@ Be educational, clear, and encouraging!`;
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API error:", response.status, errorText);
+
+      // Provide more specific error messages
+      if (response.status === 429) {
+        return NextResponse.json({
+          success: false,
+          error: "Rate limit reached. Please wait a moment and try again.",
+        });
+      } else if (response.status === 400) {
+        return NextResponse.json({
+          success: false,
+          error: "Invalid request. Please try drawing again.",
+        });
+      }
+
       return NextResponse.json({
         success: false,
-        error: "Failed to analyze image",
+        error: "Failed to analyze image. Please try again.",
       });
     }
 
