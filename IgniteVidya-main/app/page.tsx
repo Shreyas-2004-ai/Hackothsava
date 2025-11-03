@@ -1167,7 +1167,7 @@ export default function HomePage() {
               </div>
               <div className="text-center md:text-left">
                 <h3 className="text-sm md:text-lg font-bold text-black dark:text-white">
-                  IgniteVidya
+                  Apna Parivar
                 </h3>
                 <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
                   STEM Education Platform
@@ -1179,7 +1179,7 @@ export default function HomePage() {
             </div>
 
             <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto px-2">
-              IgniteVidya was created to democratize STEM education and make
+              Apna Parivar was created to democratize STEM education and make
               quality learning accessible to every student, regardless of their
               background or location.
             </p>
@@ -1192,7 +1192,7 @@ export default function HomePage() {
                 onClick={() => {
                   playClickSound("secondary");
                   window.open(
-                    "https://www.youtube.com/@ignitevidya",
+                    "https://www.youtube.com/@Apna Parivar",
                     "_blank"
                   );
                 }}
@@ -1207,7 +1207,7 @@ export default function HomePage() {
                 className="rounded-lg border-zinc-200 dark:border-zinc-800 bg-transparent text-xs px-2 py-1 md:px-3 md:py-2"
                 onClick={() => {
                   playClickSound("secondary");
-                  window.open("https://www.facebook.com/ignitevidya", "_blank");
+                  window.open("https://www.facebook.com/Apna Parivar", "_blank");
                 }}
                 onMouseEnter={() => playHoverSound("button")}
               >
@@ -1220,7 +1220,7 @@ export default function HomePage() {
                 className="rounded-lg border-zinc-200 dark:border-zinc-800 bg-transparent text-xs px-2 py-1 md:px-3 md:py-2"
                 onClick={() => {
                   playClickSound("secondary");
-                  window.open("https://www.instagram.com/ignitevidya", "_blank");
+                  window.open("https://www.instagram.com/Apna Parivar", "_blank");
                 }}
                 onMouseEnter={() => playHoverSound("button")}
               >
@@ -1236,9 +1236,9 @@ export default function HomePage() {
       <footer className="py-3 md:py-6 px-2 md:px-4 border-t border-zinc-200 dark:border-zinc-800 mb-20">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            2024 IgniteVidya. Created by{" "}
+            2024 Apna Parivar. Created by{" "}
             <span className="font-semibold text-black dark:text-white">
-              IgniteVidya Team
+              Apna Parivar Team
             </span>
             . All rights reserved.
           </p>

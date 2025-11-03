@@ -12,13 +12,13 @@ const pressStart2P = Press_Start_2P({
 })
 
 export const metadata: Metadata = {
-  title: "IgniteVidya - STEM Learning Platform",
+  title: "Apna Parivar - STEM Learning Platform",
   description: "Family connections for all. Interactive family tree management with secure authentication, multi-generational mapping, and personalized relationship tracking.",
   generator: 'IgniteVidya',
   keywords: ['STEM', 'Education', 'Learning', 'Science', 'Technology', 'Engineering', 'Mathematics', 'Students', 'Grades 6-12'],
   authors: [{ name: 'IgniteVidya Team' }],
   openGraph: {
-    title: 'IgniteVidya - STEM Learning Platform',
+    title: 'Apna Parivar',
     description: 'Family connections for all. Interactive family tree management with secure authentication, multi-generational mapping, and personalized relationship tracking.',
     type: 'website',
   },
