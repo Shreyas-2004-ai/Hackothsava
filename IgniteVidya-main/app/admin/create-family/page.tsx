@@ -23,26 +23,59 @@ export default function CreateFamilyPage() {
     setIsLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Call the Supabase function to create family
-      const { data, error } = await supabase.rpc('create_family_with_admin', {
-        p_family_name: formData.familyName,
-        p_first_name: formData.firstName,
-        p_last_name: formData.lastName,
-        p_email: user.email!,
-        p_subscription_type: formData.subscriptionType,
-      });
+      // Create family
+      const subscriptionEndDate =
+        formData.subscriptionType === "free_trial"
+          ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
+          : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
 
-      if (error) throw error;
+      const { data: familyData, error: familyError } = await supabase
+        .from("families")
+        .insert({
+          family_name: formData.familyName,
+          created_by: user.id,
+          subscription_type: formData.subscriptionType,
+          subscription_end_date: subscriptionEndDate,
+        })
+        .select()
+        .single();
+
+      if (familyError) throw familyError;
+
+      // Create primary admin member
+      const { data: memberData, error: memberError } = await supabase
+        .from("family_members")
+        .insert({
+          family_id: familyData.id,
+          user_id: user.id,
+          email: user.email!,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          is_admin: true,
+          is_primary_admin: true,
+          invitation_accepted: true,
+        })
+        .select()
+        .single();
+
+      if (memberError) throw memberError;
+
+      console.log("Family created:", familyData);
+      console.log("Admin member created:", memberData);
+
+      alert("Family created successfully!");
 
       // If paid subscription, redirect to payment
-      if (formData.subscriptionType === 'paid') {
-        router.push(`/admin/payment?family_id=${data}`);
+      if (formData.subscriptionType === "paid") {
+        router.push(`/admin/payment?family_id=${familyData.id}`);
       } else {
         // Redirect to admin dashboard
-        router.push('/admin/dashboard');
+        router.push("/admin/dashboard");
       }
     } catch (error) {
       console.error("Error creating family:", error);
@@ -84,7 +117,9 @@ export default function CreateFamilyPage() {
                 type="text"
                 placeholder="e.g., Sharma Family"
                 value={formData.familyName}
-                onChange={(e) => setFormData({ ...formData, familyName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, familyName: e.target.value })
+                }
                 required
                 className="h-12"
               />
@@ -99,7 +134,9 @@ export default function CreateFamilyPage() {
                 type="text"
                 placeholder="e.g., Ramesh"
                 value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, firstName: e.target.value })
+                }
                 required
                 className="h-12"
               />
@@ -114,7 +151,9 @@ export default function CreateFamilyPage() {
                 type="text"
                 placeholder="e.g., Sharma"
                 value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, lastName: e.target.value })
+                }
                 className="h-12"
               />
             </div>
@@ -128,11 +167,13 @@ export default function CreateFamilyPage() {
                 {/* Free Trial */}
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, subscriptionType: 'free_trial' })}
+                  onClick={() =>
+                    setFormData({ ...formData, subscriptionType: "free_trial" })
+                  }
                   className={`p-4 rounded-xl border-2 transition-all ${
-                    formData.subscriptionType === 'free_trial'
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30'
-                      : 'border-zinc-200 dark:border-zinc-800 hover:border-blue-300'
+                    formData.subscriptionType === "free_trial"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
+                      : "border-zinc-200 dark:border-zinc-800 hover:border-blue-300"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -152,11 +193,13 @@ export default function CreateFamilyPage() {
                 {/* Paid Subscription */}
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, subscriptionType: 'paid' })}
+                  onClick={() =>
+                    setFormData({ ...formData, subscriptionType: "paid" })
+                  }
                   className={`p-4 rounded-xl border-2 transition-all ${
-                    formData.subscriptionType === 'paid'
-                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/30'
-                      : 'border-zinc-200 dark:border-zinc-800 hover:border-purple-300'
+                    formData.subscriptionType === "paid"
+                      ? "border-purple-500 bg-purple-50 dark:bg-purple-950/30"
+                      : "border-zinc-200 dark:border-zinc-800 hover:border-purple-300"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -202,9 +245,7 @@ export default function CreateFamilyPage() {
                   Creating Family...
                 </>
               ) : (
-                <>
-                  Create Family
-                </>
+                <>Create Family</>
               )}
             </Button>
           </form>
