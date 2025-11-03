@@ -121,36 +121,36 @@ export default function HomePage() {
 
   const educationLevels = [
     {
-      level: "Higher Primary",
-      grades: ["6th", "7th"],
+      level: "Add Family Members",
+      grades: ["Parents", "Children"],
       gradeCount: 2,
-      theme: "Foundation Builder",
-      description: "Build strong STEM foundations",
+      theme: "Family Builder",
+      description: "Add and connect family members",
       icon: Rocket,
       color: "blue",
-      href: "/level/higher-primary",
+      href: "/level/add-family-members",
       hasGames: true,
     },
     {
-      level: "High School",
-      grades: ["8th", "9th", "10th"],
+      level: "View Family Tree",
+      grades: ["Ancestors", "Descendants", "Relatives"],
       gradeCount: 3,
-      theme: "Knowledge Explorer",
-      description: "Explore advanced concepts",
+      theme: "Heritage Explorer",
+      description: "Explore family connections",
       icon: Microscope,
       color: "green",
-      href: "/level/high-school",
+      href: "/level/view-family-tree",
       hasGames: false,
     },
     {
-      level: "Higher Secondary",
-      grades: ["11th", "12th"],
+      level: "Add Admins",
+      grades: ["Family Admins", "Tree Managers"],
       gradeCount: 2,
-      theme: "Future Leader",
-      description: "Master specialized subjects",
+      theme: "Access Manager",
+      description: "Add family tree administrators",
       icon: Crown,
       color: "purple",
-      href: "/level/higher-secondary",
+      href: "/level/add-admins",
       hasGames: false,
     },
   ];
@@ -815,11 +815,11 @@ export default function HomePage() {
           >
             <h2 className="text-xl md:text-3xl font-extrabold text-black dark:text-white mb-1 md:mb-2 font-serif tracking-wide">
               <span className="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-slate-100 dark:via-white dark:to-slate-100 bg-clip-text text-transparent">
-                Choose Your Education Level
+                Choose Your Family Action
               </span>
             </h2>
             <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
-              Select your education level to access appropriate STEM resources
+              Select your family management action to organize your family tree
             </p>
           </motion.div>
 
@@ -831,8 +831,8 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 * index }}
                 className={`${
-                  level.level === "Higher Primary" ||
-                  level.level === "Higher Secondary"
+                  level.level === "Add Family Members" ||
+                  level.level === "Add Admins"
                     ? "md:mt-10"
                     : ""
                 }`}
@@ -890,7 +890,7 @@ export default function HomePage() {
                                 : "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
                             }`}
                           >
-                            Class {grade}
+                            {grade}
                           </span>
                         ))}
                       </div>
