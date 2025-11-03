@@ -30,9 +30,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState as useNewsState, useEffect } from "react";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
@@ -47,37 +45,15 @@ const navItems = [
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const [teacherProfile, setTeacherProfile] = useState<any>(null);
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user, signOut } = useAuth();
   const { soundEnabled, toggleSound, playHoverSound, playClickSound } =
     useSoundEffects();
 
-  useEffect(() => {
-    if (user) {
-      fetchTeacherProfile();
-    } else {
-      setTeacherProfile(null);
-    }
-  }, [user]);
-
-  const fetchTeacherProfile = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from('teacher_profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
-    setTeacherProfile(data);
-  };
-
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setTeacherProfile(null);
     playClickSound("secondary");
-    router.push('/');
+    await signOut();
   };
 
   return (
@@ -124,32 +100,26 @@ export default function Navigation() {
             <div className="flex justify-end">
               {/* Desktop Actions */}
               <div className="hidden md:flex items-center space-x-2">
-                {teacherProfile ? (
-                  <Link href="/teacher/dashboard">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => playClickSound("secondary")}
-                      onMouseEnter={() => playHoverSound("button")}
-                      className="rounded-xl"
-                      title="Teacher Dashboard"
-                    >
-                      <LayoutDashboard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      <span className="sr-only">Teacher Dashboard</span>
-                    </Button>
-                  </Link>
+                {user ? (
+                  <Button
+                    variant="ghost"
+                    onClick={handleSignOut}
+                    onMouseEnter={() => playHoverSound("button")}
+                    className="rounded-xl px-4"
+                  >
+                    <LogOut className="h-5 w-5 mr-2 text-red-600 dark:text-red-400" />
+                    <span className="text-sm font-semibold">Sign Out</span>
+                  </Button>
                 ) : (
-                  <Link href="/teacher/login">
+                  <Link href="/login">
                     <Button
                       variant="ghost"
-                      size="icon"
                       onClick={() => playClickSound("secondary")}
                       onMouseEnter={() => playHoverSound("button")}
-                      className="rounded-xl"
-                      title="Teacher Login"
+                      className="rounded-xl px-4"
                     >
-                      <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      <span className="sr-only">Teacher Login</span>
+                      <User className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-400" />
+                      <span className="text-sm font-semibold">Login</span>
                     </Button>
                   </Link>
                 )}
@@ -204,32 +174,30 @@ export default function Navigation() {
 
               {/* Mobile Actions */}
               <div className="md:hidden flex items-center space-x-2">
-                {teacherProfile ? (
-                  <Link href="/teacher/dashboard">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => playClickSound("secondary")}
-                      onMouseEnter={() => playHoverSound("button")}
-                      className="rounded-xl"
-                      title="Teacher Dashboard"
-                    >
-                      <LayoutDashboard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      <span className="sr-only">Teacher Dashboard</span>
-                    </Button>
-                  </Link>
+                {user ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleSignOut}
+                    onMouseEnter={() => playHoverSound("button")}
+                    className="rounded-xl"
+                    title="Sign Out"
+                  >
+                    <LogOut className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <span className="sr-only">Sign Out</span>
+                  </Button>
                 ) : (
-                  <Link href="/teacher/login">
+                  <Link href="/login">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => playClickSound("secondary")}
                       onMouseEnter={() => playHoverSound("button")}
                       className="rounded-xl"
-                      title="Teacher Login"
+                      title="Login"
                     >
-                      <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      <span className="sr-only">Teacher Login</span>
+                      <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      <span className="sr-only">Login</span>
                     </Button>
                   </Link>
                 )}
@@ -316,49 +284,7 @@ export default function Navigation() {
                     <h3 className="text-lg font-semibold text-black dark:text-white">
                       Navigation
                     </h3>
-                    {teacherProfile && (
-                      <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800">
-                        <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                          {teacherProfile.first_name}
-                        </span>
-                      </div>
-                    )}
                   </div>
-
-                  {teacherProfile && (
-                    <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 border border-blue-200 dark:border-blue-800">
-                      <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2">Logged in as Teacher</p>
-                      <div className="flex gap-2">
-                        <Link href="/teacher/dashboard" className="flex-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full text-xs"
-                            onClick={() => {
-                              playClickSound("navigation");
-                              setIsOpen(false);
-                            }}
-                          >
-                            <LayoutDashboard className="h-3 w-3 mr-1" />
-                            Dashboard
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
-                          onClick={() => {
-                            handleSignOut();
-                            setIsOpen(false);
-                          }}
-                        >
-                          <LogOut className="h-3 w-3 mr-1" />
-                          Sign Out
-                        </Button>
-                      </div>
-                    </div>
-                  )}
 
                   <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
                     {navItems.map((item) => (
@@ -422,18 +348,18 @@ function NewsSection() {
   const [currentNews, setCurrentNews] = useNewsState(0);
 
   const newsItems = [
-    "📢 STEM Education Summit 2024 - Register for free workshops",
-    "📢 Mathematics Olympiad results announced - Check winners list",
-    "📢 New Chemistry lab equipment installed in 50+ schools",
-    "📢 Biology project competition deadline: March 20, 2024",
-    "📢 Physics practical exam schedule released for Class 12",
-    "📢 Computer Science coding bootcamp - Applications open",
-    "📢 Science Fair 2024 - Theme: Sustainable Technology",
-    "📢 Engineering entrance exam pattern updated for 2024",
-    "📢 CBSE Board exam dates announced for Science subjects",
-    "📢 Robotics workshop for grades 9-12 - Limited seats available",
-    "📢 New NCERT textbooks for Physics and Chemistry released",
-    "📢 Top 100 Engineering colleges ranking published",
+    "💍 Ramesh & Priya's wedding on March 15, 2024 - Save the date!",
+    "🎉 Kumar family hosting Housewarming ceremony this Saturday",
+    "🕯️ Condolences: Shri Krishnappa passed away peacefully at 85",
+    "👶 Baby shower for Ramya on March 20 - All family invited",
+    "🎊 Golden Jubilee celebration for Rajesh & Lakshmi - 50 years!",
+    "🙏 Prayer meet for late Smt. Savitri on Sunday at 10 AM",
+    "💐 Engagement ceremony: Arun & Divya on April 5, 2024",
+    "🎂 Grandpa's 80th birthday celebration - March 25 at home",
+    "🏠 Sharma family reunion planned for summer holidays",
+    "📿 Thread ceremony for young Arjun next month",
+    "💒 25th Wedding Anniversary: Suresh & Meena - March 30",
+    "🌸 Memorial service for beloved uncle - Family gathering",
   ];
 
   useEffect(() => {

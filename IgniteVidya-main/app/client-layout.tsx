@@ -10,6 +10,7 @@ import TerminalChat from "@/components/terminal-chat"
 import ApnaParivCompanion from "@/components/afzal-chat"
 import SplashScreen from "@/components/splash-screen"
 import AudioManager from "@/components/audio-manager"
+import { AuthProvider } from "@/contexts/AuthContext"
 import { useState, useEffect } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -52,25 +53,27 @@ export default function ClientLayout({
   }
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      {showSplash ? (
-        <SplashScreen onComplete={handleSplashComplete} />
-      ) : (
-        <>
-          <Navigation />
-          <main>{children}</main>
-          <TerminalChat isApnaParivCompanionOpen={isApnaParivCompanionOpen} onOpen={handleTerminalOpen} />
-          <ApnaParivCompanion isTerminalOpen={isTerminalOpen} onOpen={handleApnaParivCompanionOpen} />
-          <Toaster />
-          {/* Audio Manager - starts after splash screen */}
-          {audioEnabled && (
-            <AudioManager 
-              autoPlay={true} 
-              showControls={true}
-            />
-          )}
-        </>
-      )}
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        {showSplash ? (
+          <SplashScreen onComplete={handleSplashComplete} />
+        ) : (
+          <>
+            <Navigation />
+            <main>{children}</main>
+            <TerminalChat isApnaParivCompanionOpen={isApnaParivCompanionOpen} onOpen={handleTerminalOpen} />
+            <ApnaParivCompanion isTerminalOpen={isTerminalOpen} onOpen={handleApnaParivCompanionOpen} />
+            <Toaster />
+            {/* Audio Manager - starts after splash screen */}
+            {audioEnabled && (
+              <AudioManager 
+                autoPlay={true} 
+                showControls={true}
+              />
+            )}
+          </>
+        )}
+      </ThemeProvider>
+    </AuthProvider>
   )
 }
