@@ -35,6 +35,24 @@ export default function AddFamilyMembersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
+  // Helper function to refresh family tree after adding member
+  const refreshFamilyTree = async (familyId: string) => {
+    try {
+      await fetch('/api/family-tree', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'refresh_stats',
+          familyId: familyId
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to refresh family tree:', error);
+    }
+  };
+
   const relationOptions = [
     "Father",
     "Mother",
@@ -108,6 +126,13 @@ export default function AddFamilyMembersPage() {
     setIsSubmitting(true);
 
     try {
+      // In a real app, get current user from auth context
+      const currentUser = {
+        id: 'user-123', // This would come from authentication
+        name: 'Ramesh Kumar', // This would come from user profile
+        email: 'ramesh@gmail.com'
+      };
+
       const response = await fetch('/api/add-family-member', {
         method: 'POST',
         headers: {
@@ -115,7 +140,9 @@ export default function AddFamilyMembersPage() {
         },
         body: JSON.stringify({
           ...formData,
-          addedBy: 'Current User' // In a real app, this would come from the authenticated user
+          addedBy: currentUser.name,
+          addedById: currentUser.id,
+          phone: formData.customFields.field5 || '', // Phone number from custom fields
         }),
       });
 
@@ -123,6 +150,9 @@ export default function AddFamilyMembersPage() {
 
       if (result.success) {
         toast.success(`${formData.name} has been added to your family tree! An invitation email has been sent to ${formData.email}`);
+        
+        // Refresh family tree statistics
+        await refreshFamilyTree(currentUser.id);
         
         // Reset form
         setFormData({
@@ -136,6 +166,11 @@ export default function AddFamilyMembersPage() {
           }
         });
         setPhotoPreview(null);
+        
+        // Show additional success information
+        toast.success(`Family tree updated! ${formData.name} can now access the family tree at ApnaParivar.com`, {
+          duration: 5000
+        });
       } else {
         toast.error(result.message || "Failed to add family member");
       }

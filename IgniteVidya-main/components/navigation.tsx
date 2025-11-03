@@ -23,6 +23,8 @@ import {
   User,
   LogOut,
   LayoutDashboard,
+  Users,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
@@ -36,8 +38,8 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/notes", label: "Library", icon: BookOpen },
   { href: "/lectures", label: "Lectures", icon: Play },
-  { href: "/smart-calculator", label: "Smart Calculator", icon: Calculator, badge: "New~AI" },
-  { href: "/ai-tutor", label: "AI Tutor", icon: Brain, badge: "Coming Soon" },
+  { href: "/describe-family", label: "Describe Family", icon: Users, badge: "New~AI" },
+  { href: "/ai-chatbot", label: "AI Chatbot", icon: MessageCircle, badge: "Coming Soon" },
   { href: "/quiz", label: "Quiz", icon: Target },
   { href: "/dashboard", label: "Dashboard", icon: Star },
   { href: "/projects", label: "Projects", icon: Lightbulb },
@@ -293,7 +295,7 @@ export default function Navigation() {
                           key={item.href}
                           onClick={(e) => {
                             e.preventDefault();
-                            alert("AI Tutor is coming soon! Stay tuned for updates.");
+                            alert("AI Family Chatbot is coming soon! Get ready to chat about your family history and relationships.");
                             playClickSound("navigation");
                           }}
                           onMouseEnter={() => playHoverSound("link")}

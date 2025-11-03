@@ -39,6 +39,15 @@ export default function HomePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [onlineUsers, setOnlineUsers] = useState(1247);
   const [currentQuote, setCurrentQuote] = useState(0);
+  const [familiesConnected, setFamiliesConnected] = useState(847);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [familyStats, setFamilyStats] = useState({
+    mainAdminsCount: 847,
+    totalFamilyMembers: 12543,
+    totalAdmins: 2541,
+    newFamiliesThisMonth: 23,
+    averageFamilySize: 15
+  });
 
   const {
     playHoverSound,
@@ -62,7 +71,27 @@ export default function HomePage() {
 
   useEffect(() => {
     setMounted(true);
+    fetchFamilyStats();
   }, []);
+
+  // Fetch real-time family statistics
+  const fetchFamilyStats = async () => {
+    try {
+      setIsLoadingStats(true);
+      const response = await fetch('/api/admin-stats');
+      const result = await response.json();
+      
+      if (result.success) {
+        setFamiliesConnected(result.data.mainAdminsCount);
+        setFamilyStats(result.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch family stats:', error);
+      // Keep default value on error
+    } finally {
+      setIsLoadingStats(false);
+    }
+  };
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -109,6 +138,14 @@ export default function HomePage() {
     const interval = setInterval(() => {
       setOnlineUsers((prev) => prev + Math.floor(Math.random() * 10) - 5);
     }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Refresh family stats periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchFamilyStats();
+    }, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -648,7 +685,14 @@ export default function HomePage() {
               <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
               <Users className="h-2 w-2 text-zinc-600 dark:text-zinc-400" />
               <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
-                1,202 families connected
+                {isLoadingStats ? (
+                  <span className="inline-flex items-center gap-1">
+                    <div className="w-2 h-2 border border-zinc-400 border-t-transparent rounded-full animate-spin" />
+                    Loading...
+                  </span>
+                ) : (
+                  `${familiesConnected.toLocaleString()} families connected`
+                )}
               </span>
             </motion.div>
 
@@ -737,6 +781,35 @@ export default function HomePage() {
                   "{quotes[currentQuote]}"
                 </p>
               </motion.div>
+
+              {/* Family Stats */}
+              {!isLoadingStats && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="mt-6 flex justify-center gap-6 md:gap-8 text-xs md:text-sm"
+                >
+                  <div className="text-center">
+                    <div className="font-bold text-black dark:text-white">
+                      {familyStats.totalFamilyMembers.toLocaleString()}
+                    </div>
+                    <div className="text-zinc-500 dark:text-zinc-500">Members</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-black dark:text-white">
+                      {familyStats.averageFamilySize}
+                    </div>
+                    <div className="text-zinc-500 dark:text-zinc-500">Avg Family Size</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-green-600 dark:text-green-400">
+                      +{familyStats.newFamiliesThisMonth}
+                    </div>
+                    <div className="text-zinc-500 dark:text-zinc-500">This Month</div>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
 
             {/* Search Bar */}
@@ -1007,15 +1080,15 @@ export default function HomePage() {
             className="text-center mb-6 md:mb-8"
           >
             <h2 className="text-lg md:text-2xl font-bold text-black dark:text-white mb-1 md:mb-2">
-              Latest News
+              Family Events & Updates
             </h2>
             <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-              Stay updated with the latest from Apna Parivar
+              Stay connected with your family's latest milestones and celebrations
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {/* News Item 1 */}
+            {/* Family Event 1 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1031,16 +1104,15 @@ export default function HomePage() {
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 group-hover:bg-blue-400 transition-colors" />
                     <div className="flex-1">
                       <h3 className="font-semibold text-black dark:text-white text-sm md:text-base mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        New AI Tutor Features Released
+                        Rajesh & Priya's Wedding Anniversary
                       </h3>
                       <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-3">
-                        Enhanced AI tutoring capabilities with personalized
-                        learning paths and real-time problem solving assistance.
+                        Celebrating 25 years of love and togetherness! The family gathered to commemorate this special milestone with joy and blessings.
                       </p>
                       <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500">
                         <span>2 days ago</span>
                         <span className="text-blue-600 dark:text-blue-400">
-                          Technology
+                          Anniversary
                         </span>
                       </div>
                     </div>
@@ -1049,7 +1121,7 @@ export default function HomePage() {
               </Card>
             </motion.div>
 
-            {/* News Item 2 */}
+            {/* Family Event 2 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1065,16 +1137,15 @@ export default function HomePage() {
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 group-hover:bg-green-400 transition-colors" />
                     <div className="flex-1">
                       <h3 className="font-semibold text-black dark:text-white text-sm md:text-base mb-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-                        New Science Lab Simulations
+                        Little Arjun's First Birthday
                       </h3>
                       <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-3">
-                        Interactive virtual laboratory experiments for chemistry
-                        and physics now available for all grade levels.
+                        Our youngest family member turned one! A joyful celebration filled with laughter, cake, and precious memories for the whole family.
                       </p>
                       <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500">
                         <span>5 days ago</span>
                         <span className="text-green-600 dark:text-green-400">
-                          Science
+                          Birthday
                         </span>
                       </div>
                     </div>
@@ -1083,7 +1154,7 @@ export default function HomePage() {
               </Card>
             </motion.div>
 
-            {/* News Item 3 */}
+            {/* Family Event 3 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1099,16 +1170,15 @@ export default function HomePage() {
                     <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 group-hover:bg-purple-400 transition-colors" />
                     <div className="flex-1">
                       <h3 className="font-semibold text-black dark:text-white text-sm md:text-base mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                        Mathematics Competition Winners
+                        Grandma's 80th Birthday Celebration
                       </h3>
                       <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-3">
-                        Congratulations to our students who excelled in the
-                        National Mathematics Olympiad using Apna Parivar.
+                        Three generations came together to celebrate our beloved matriarch's milestone birthday with traditional festivities and heartfelt blessings.
                       </p>
                       <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500">
                         <span>1 week ago</span>
                         <span className="text-purple-600 dark:text-purple-400">
-                          Mathematics
+                          Milestone
                         </span>
                       </div>
                     </div>
@@ -1129,11 +1199,11 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             <h2 className="text-lg md:text-3xl font-bold text-black dark:text-white mb-2 md:mb-4 font-mono tracking-wide pixel-font">
-              READY TO IGNITE YOUR STEM JOURNEY?
+              READY TO CONNECT YOUR FAMILY?
             </h2>
             <p className="text-sm md:text-lg text-zinc-600 dark:text-zinc-400 mb-4 md:mb-6 max-w-2xl mx-auto px-2 font-mono tracking-wide pixel-text">
               JOIN THOUSANDS OF FAMILIES WHO ARE ALREADY USING APNA PARIVAR TO
-              MASTER STEM SUBJECTS THROUGH INTERACTIVE LEARNING.
+              PRESERVE THEIR HERITAGE AND STRENGTHEN FAMILY BONDS.
             </p>
             <Button
               onClick={handleGetStarted}
@@ -1170,7 +1240,7 @@ export default function HomePage() {
                   Apna Parivar
                 </h3>
                 <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
-                  STEM Education Platform
+                  Family Tree Management Platform
                 </p>
                 <p className="text-xs text-zinc-500 dark:text-zinc-500">
                   Family connections for all
@@ -1179,9 +1249,9 @@ export default function HomePage() {
             </div>
 
             <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto px-2">
-              Apna Parivar was created to democratize STEM education and make
-              quality learning accessible to every student, regardless of their
-              background or location.
+              Apna Parivar was created to help families stay connected, preserve
+              their heritage, and strengthen bonds across generations through
+              digital family tree management.
             </p>
 
             <div className="flex justify-center gap-2 md:gap-3">
@@ -1199,7 +1269,7 @@ export default function HomePage() {
                 onMouseEnter={() => playHoverSound("button")}
               >
                 <Youtube className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
-                YouTube
+                Family Stories
               </Button>
               <Button
                 variant="outline"
@@ -1212,7 +1282,7 @@ export default function HomePage() {
                 onMouseEnter={() => playHoverSound("button")}
               >
                 <Facebook className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
-                Facebook
+                Community
               </Button>
               <Button
                 variant="outline"
@@ -1225,7 +1295,7 @@ export default function HomePage() {
                 onMouseEnter={() => playHoverSound("button")}
               >
                 <Instagram className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1" />
-                Instagram
+                Memories
               </Button>
             </div>
           </motion.div>

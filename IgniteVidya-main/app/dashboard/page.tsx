@@ -7,25 +7,22 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { 
-  Brain, 
+  Users, 
   TrendingUp, 
-  BookOpen, 
-  Target, 
+  Heart, 
+  Calendar, 
   Trophy, 
   Clock, 
   Star,
-  Users,
+  UserPlus,
   Award,
-  Calendar,
+  Home,
   BarChart3,
-  PlayCircle,
+  Baby,
   CheckCircle,
   AlertCircle,
-  Flame,
-  Zap,
   Crown,
   Shield,
-  Rocket,
   Activity,
   PieChart,
   LineChart,
@@ -38,329 +35,204 @@ import {
   ChevronUp,
   ChevronDown,
   Timer,
-  Gauge
+  Gauge,
+  TreePine,
+  Gift,
+  Camera,
+  MessageCircle,
+  Phone,
+  Mail,
+  MapPin,
+  Cake
 } from "lucide-react"
 
-interface StudentProgress {
-  subject: string
-  completedLessons: number
-  totalLessons: number
-  averageScore: number
-  lastActivity: string
-  grade: string
-  trend: 'up' | 'down' | 'stable'
-  weeklyHours: number
-  difficulty: 'beginner' | 'intermediate' | 'advanced'
-}
-
-interface QuizResult {
-  id: string
-  title: string
-  subject: string
-  score: number
-  totalQuestions: number
-  date: string
-  grade: string
-  timeSpent: number
-  difficulty: 'easy' | 'medium' | 'hard'
-}
-
-interface Achievement {
-  id: string
-  title: string
-  description: string
-  icon: string
-  earnedDate: string
-  points: number
-  rarity: 'common' | 'rare' | 'epic' | 'legendary'
-}
-
-interface LeaderboardEntry {
+interface FamilyMember {
   id: string
   name: string
-  points: number
-  level: number
-  avatar: string
-  rank: number
-  isCurrentUser?: boolean
+  relation: string
+  age: number
+  location: string
+  lastActive: string
+  profilePicture: string
+  isOnline: boolean
+  joinedDate: string
 }
 
-interface LevelInfo {
-  currentLevel: number
-  currentXP: number
-  nextLevelXP: number
-  levelProgress: number
+interface FamilyEvent {
+  id: string
   title: string
-  benefits: string[]
+  type: 'birthday' | 'anniversary' | 'wedding' | 'memorial' | 'celebration'
+  date: string
+  attendees: number
+  location: string
+  description: string
 }
 
-export default function DashboardPage() {
-  const [userType, setUserType] = useState("student")
-  const [currentGrade, setCurrentGrade] = useState("6")
-  const [progress, setProgress] = useState<StudentProgress[]>([])
-  const [recentQuizzes, setRecentQuizzes] = useState<QuizResult[]>([])
-  const [achievements, setAchievements] = useState<Achievement[]>([])
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [levelInfo, setLevelInfo] = useState<LevelInfo>({
-    currentLevel: 1,
-    currentXP: 0,
-    nextLevelXP: 100,
-    levelProgress: 0,
-    title: 'Novice Scholar',
-    benefits: []
-  })
+interface FamilyStats {
+  totalMembers: number
+  activeMembers: number
+  newMembersThisMonth: number
+  upcomingEvents: number
+  familyTreeDepth: number
+  averageAge: number
+  oldestMember: string
+  youngestMember: string
+}
+
+export default function FamilyDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
-  const [streakCount, setStreakCount] = useState(0)
-  const [overallStats, setOverallStats] = useState({
-    totalLessons: 0,
-    completedLessons: 0,
-    averageScore: 0,
-    totalQuizzes: 0,
-    totalPoints: 0,
-    weeklyGoal: 100,
-    weeklyProgress: 0,
-    studyStreak: 0,
-    rank: 0,
-    totalStudents: 0
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
+  const [recentEvents, setRecentEvents] = useState<FamilyEvent[]>([])
+  const [familyStats, setFamilyStats] = useState<FamilyStats>({
+    totalMembers: 0,
+    activeMembers: 0,
+    newMembersThisMonth: 0,
+    upcomingEvents: 0,
+    familyTreeDepth: 0,
+    averageAge: 0,
+    oldestMember: '',
+    youngestMember: ''
   })
 
-  // Enhanced sample data
+  // Sample family data
   useEffect(() => {
-    const sampleProgress: StudentProgress[] = [
-      {
-        subject: "Mathematics",
-        completedLessons: 12,
-        totalLessons: 15,
-        averageScore: 85,
-        lastActivity: "2 hours ago",
-        grade: "6",
-        trend: 'up',
-        weeklyHours: 4.5,
-        difficulty: 'intermediate'
-      },
-      {
-        subject: "Physics",
-        completedLessons: 8,
-        totalLessons: 12,
-        averageScore: 78,
-        lastActivity: "1 day ago",
-        grade: "6",
-        trend: 'stable',
-        weeklyHours: 3.2,
-        difficulty: 'intermediate'
-      },
-      {
-        subject: "Chemistry",
-        completedLessons: 10,
-        totalLessons: 10,
-        averageScore: 92,
-        lastActivity: "3 hours ago",
-        grade: "6",
-        trend: 'up',
-        weeklyHours: 5.1,
-        difficulty: 'advanced'
-      },
-      {
-        subject: "Computer Science",
-        completedLessons: 6,
-        totalLessons: 14,
-        averageScore: 88,
-        lastActivity: "5 hours ago",
-        grade: "6",
-        trend: 'up',
-        weeklyHours: 6.8,
-        difficulty: 'advanced'
-      }
-    ]
-
-    const sampleQuizzes: QuizResult[] = [
+    const sampleMembers: FamilyMember[] = [
       {
         id: "1",
-        title: "Advanced Calculus",
-        subject: "Mathematics",
-        score: 8,
-        totalQuestions: 10,
-        date: "2024-01-15",
-        grade: "6",
-        timeSpent: 25,
-        difficulty: 'hard'
+        name: "Krishnappa",
+        relation: "Father",
+        age: 65,
+        location: "Bangalore, India",
+        lastActive: "2 hours ago",
+        profilePicture: "👨‍🦳",
+        isOnline: true,
+        joinedDate: "2024-01-15"
       },
       {
         id: "2",
-        title: "Quantum Mechanics Basics",
-        subject: "Physics",
-        score: 7,
-        totalQuestions: 8,
-        date: "2024-01-12",
-        grade: "6",
-        timeSpent: 18,
-        difficulty: 'medium'
+        name: "Lakshmi",
+        relation: "Mother",
+        age: 60,
+        location: "Bangalore, India",
+        lastActive: "1 day ago",
+        profilePicture: "👩‍🦳",
+        isOnline: false,
+        joinedDate: "2024-01-16"
       },
       {
         id: "3",
-        title: "Organic Chemistry",
-        subject: "Chemistry",
-        score: 9,
-        totalQuestions: 10,
-        date: "2024-01-10",
-        grade: "6",
-        timeSpent: 22,
-        difficulty: 'hard'
+        name: "Rajesh",
+        relation: "Son",
+        age: 35,
+        location: "Mumbai, India",
+        lastActive: "30 minutes ago",
+        profilePicture: "👨‍💼",
+        isOnline: true,
+        joinedDate: "2024-01-20"
       },
       {
         id: "4",
-        title: "Data Structures",
-        subject: "Computer Science",
-        score: 10,
-        totalQuestions: 12,
-        date: "2024-01-08",
-        grade: "6",
-        timeSpent: 30,
-        difficulty: 'hard'
-      }
-    ]
-
-    const sampleAchievements: Achievement[] = [
-      {
-        id: "1",
-        title: "Quiz Master",
-        description: "Completed 50 quizzes with 80%+ average",
-        icon: "🎯",
-        earnedDate: "2024-01-10",
-        points: 150,
-        rarity: 'epic'
-      },
-      {
-        id: "2",
-        title: "Math Genius",
-        description: "Perfect scores in 10 consecutive math quizzes",
-        icon: "🧮",
-        earnedDate: "2024-01-15",
-        points: 200,
-        rarity: 'legendary'
-      },
-      {
-        id: "3",
-        title: "Speed Runner",
-        description: "Complete quiz in under 5 minutes",
-        icon: "⚡",
-        earnedDate: "2024-01-12",
-        points: 75,
-        rarity: 'rare'
-      },
-      {
-        id: "4",
-        title: "Knowledge Seeker",
-        description: "Study for 7 consecutive days",
-        icon: "🔍",
-        earnedDate: "2024-01-08",
-        points: 100,
-        rarity: 'epic'
+        name: "Priya",
+        relation: "Daughter",
+        age: 32,
+        location: "Delhi, India",
+        lastActive: "5 hours ago",
+        profilePicture: "👩‍💻",
+        isOnline: false,
+        joinedDate: "2024-01-25"
       },
       {
         id: "5",
-        title: "First Steps",
-        description: "Complete your first lesson",
-        icon: "👶",
-        earnedDate: "2024-01-01",
-        points: 25,
-        rarity: 'common'
+        name: "Arjun",
+        relation: "Grandson",
+        age: 8,
+        location: "Mumbai, India",
+        lastActive: "1 hour ago",
+        profilePicture: "👦",
+        isOnline: true,
+        joinedDate: "2024-02-01"
+      }
+    ]   
+ const sampleEvents: FamilyEvent[] = [
+      {
+        id: "1",
+        title: "Rajesh & Priya's Wedding Anniversary",
+        type: "anniversary",
+        date: "2024-03-15",
+        attendees: 25,
+        location: "Family Home, Bangalore",
+        description: "Celebrating 25 years of love and togetherness"
+      },
+      {
+        id: "2",
+        title: "Little Arjun's Birthday",
+        type: "birthday",
+        date: "2024-03-20",
+        attendees: 15,
+        location: "Mumbai",
+        description: "Our youngest family member turns 9!"
+      },
+      {
+        id: "3",
+        title: "Grandma's 80th Birthday",
+        type: "birthday",
+        date: "2024-04-05",
+        attendees: 40,
+        location: "Bangalore",
+        description: "Milestone celebration for our beloved matriarch"
+      },
+      {
+        id: "4",
+        title: "Family Reunion",
+        type: "celebration",
+        date: "2024-04-15",
+        attendees: 60,
+        location: "Mysore",
+        description: "Annual family gathering with all relatives"
       }
     ]
 
-    const sampleLeaderboard: LeaderboardEntry[] = [
-      { id: '1', name: 'Alex Chen', points: 2850, level: 12, avatar: '👨‍🎓', rank: 1 },
-      { id: '2', name: 'Sarah Kim', points: 2640, level: 11, avatar: '👩‍🎓', rank: 2 },
-      { id: '3', name: 'You', points: 2420, level: 10, avatar: '🎯', rank: 3, isCurrentUser: true },
-      { id: '4', name: 'Mike Johnson', points: 2180, level: 9, avatar: '👨‍💻', rank: 4 },
-      { id: '5', name: 'Emma Davis', points: 1950, level: 9, avatar: '👩‍🔬', rank: 5 },
-      { id: '6', name: 'David Wilson', points: 1820, level: 8, avatar: '👨‍🏫', rank: 6 },
-      { id: '7', name: 'Lisa Brown', points: 1650, level: 8, avatar: '👩‍💼', rank: 7 },
-      { id: '8', name: 'James Taylor', points: 1480, level: 7, avatar: '👨‍🎨', rank: 8 }
-    ]
+    setFamilyMembers(sampleMembers)
+    setRecentEvents(sampleEvents)
+    
+    // Calculate family statistics
+    const activeCount = sampleMembers.filter(m => m.isOnline).length
+    const ages = sampleMembers.map(m => m.age)
+    const avgAge = ages.reduce((sum, age) => sum + age, 0) / ages.length
+    const oldest = sampleMembers.reduce((prev, current) => (prev.age > current.age) ? prev : current)
+    const youngest = sampleMembers.reduce((prev, current) => (prev.age < current.age) ? prev : current)
 
-    const levelData: LevelInfo = {
-      currentLevel: 10,
-      currentXP: 2420,
-      nextLevelXP: 2500,
-      levelProgress: (2420 / 2500) * 100,
-      title: 'Advanced Scholar',
-      benefits: ['Access to advanced courses', 'Priority support', 'Exclusive study materials']
-    }
-
-    setProgress(sampleProgress)
-    setRecentQuizzes(sampleQuizzes)
-    setAchievements(sampleAchievements)
-    setLeaderboard(sampleLeaderboard)
-    setLevelInfo(levelData)
-    setStreakCount(7)
-
-    // Calculate comprehensive stats
-    const totalLessons = sampleProgress.reduce((sum, p) => sum + p.totalLessons, 0)
-    const completedLessons = sampleProgress.reduce((sum, p) => sum + p.completedLessons, 0)
-    const averageScore = sampleProgress.reduce((sum, p) => sum + p.averageScore, 0) / sampleProgress.length
-    const totalQuizzes = sampleQuizzes.length
-    const totalPoints = sampleAchievements.reduce((sum, a) => sum + a.points, 0)
-    const weeklyHours = sampleProgress.reduce((sum, p) => sum + p.weeklyHours, 0)
-
-    setOverallStats({
-      totalLessons,
-      completedLessons,
-      averageScore,
-      totalQuizzes,
-      totalPoints,
-      weeklyGoal: 100,
-      weeklyProgress: (weeklyHours / 20) * 100,
-      studyStreak: 7,
-      rank: 3,
-      totalStudents: 1247
+    setFamilyStats({
+      totalMembers: sampleMembers.length,
+      activeMembers: activeCount,
+      newMembersThisMonth: 2,
+      upcomingEvents: sampleEvents.length,
+      familyTreeDepth: 3,
+      averageAge: Math.round(avgAge),
+      oldestMember: oldest.name,
+      youngestMember: youngest.name
     })
   }, [])
 
-  const getGradeColor = (score: number) => {
-    if (score >= 95) return "text-emerald-600 dark:text-emerald-400"
-    if (score >= 90) return "text-green-600 dark:text-green-400"
-    if (score >= 85) return "text-blue-600 dark:text-blue-400"
-    if (score >= 80) return "text-cyan-600 dark:text-cyan-400"
-    if (score >= 75) return "text-yellow-600 dark:text-yellow-400"
-    if (score >= 70) return "text-orange-600 dark:text-orange-400"
-    return "text-red-600 dark:text-red-400"
-  }
-
-  const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return "bg-emerald-500"
-    if (percentage >= 80) return "bg-green-500"
-    if (percentage >= 70) return "bg-blue-500"
-    if (percentage >= 60) return "bg-cyan-500"
-    if (percentage >= 50) return "bg-yellow-500"
-    if (percentage >= 40) return "bg-orange-500"
-    return "text-red-500"
-  }
-
-  const getRarityColor = (rarity: string) => {
-    switch (rarity) {
-      case 'legendary': return 'from-yellow-400 to-orange-500'
-      case 'epic': return 'from-purple-400 to-pink-500'
-      case 'rare': return 'from-blue-400 to-cyan-500'
-      case 'common': return 'from-gray-400 to-gray-500'
-      default: return 'from-gray-400 to-gray-500'
+  const getEventTypeColor = (type: string) => {
+    switch (type) {
+      case 'birthday': return 'text-pink-600 dark:text-pink-400'
+      case 'anniversary': return 'text-red-600 dark:text-red-400'
+      case 'wedding': return 'text-purple-600 dark:text-purple-400'
+      case 'memorial': return 'text-gray-600 dark:text-gray-400'
+      case 'celebration': return 'text-green-600 dark:text-green-400'
+      default: return 'text-blue-600 dark:text-blue-400'
     }
   }
 
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'up': return <ArrowUp className="h-4 w-4 text-green-500" />
-      case 'down': return <ArrowDown className="h-4 w-4 text-red-500" />
-      default: return <Activity className="h-4 w-4 text-gray-500" />
-    }
-  }
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'hard': return 'text-red-600 dark:text-red-400'
-      case 'medium': return 'text-yellow-600 dark:text-yellow-400'
-      case 'easy': return 'text-green-600 dark:text-green-400'
-      default: return 'text-gray-600 dark:text-gray-400'
+  const getEventIcon = (type: string) => {
+    switch (type) {
+      case 'birthday': return <Cake className="h-4 w-4" />
+      case 'anniversary': return <Heart className="h-4 w-4" />
+      case 'wedding': return <Crown className="h-4 w-4" />
+      case 'memorial': return <Star className="h-4 w-4" />
+      case 'celebration': return <Gift className="h-4 w-4" />
+      default: return <Calendar className="h-4 w-4" />
     }
   }
 
@@ -374,722 +246,507 @@ export default function DashboardPage() {
             {/* Monitor Brand Strip */}
             <div className="absolute top-1 left-1/2 transform -translate-x-1/2">
               <div className="bg-gray-700 px-4 py-1 rounded-full">
-                <span className="text-xs text-gray-300 font-mono tracking-wider">IGNITE QUANTUM DISPLAY</span>
+                <span className="text-xs text-gray-300 font-mono tracking-wider">APNA PARIVAR DISPLAY</span>
               </div>
             </div>
             
             {/* Screen Bezel */}
             <div className="bg-black p-4 rounded-2xl mt-6 relative overflow-hidden shadow-inner">
-          {/* Screen Reflection Effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent rounded-2xl -z-30"></div>
+              {/* Screen Reflection Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent rounded-2xl -z-30"></div>
               
               {/* Active Screen */}
               <div className="relative bg-gray-900 rounded-xl overflow-hidden h-[75vh] border border-gray-700/50 shadow-2xl">
-              {/* Screen Content Container */}
-              <div className="relative h-full p-4 overflow-y-auto">
-                {/* Screen Glow Effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-transparent to-purple-500/8 pointer-events-none rounded-xl -z-10"></div>
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent -z-10"></div>
-                
-                {/* Main Content Wrapper with proper z-index */}
-                <div className="relative z-10">
-        {/* Professional Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-white mb-1">
-                Hello, Scholar! 👋
-              </h1>
-              <p className="text-gray-400 text-sm">
-                Here is your academic progress
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-400 mb-1">Current Grade</div>
-              <Badge className="bg-blue-600 text-white text-lg px-3 py-1">
-                Grade {currentGrade}
-              </Badge>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Navigation Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-4"
-        >
-          <div className="flex space-x-1 bg-gray-800 border border-gray-700 p-1 rounded-lg">
-            {[
-              { id: 'overview', label: 'Overview', icon: BarChart3 },
-              { id: 'analytics', label: 'Analytics', icon: PieChart },
-              { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
-              { id: 'achievements', label: 'Achievements', icon: Award }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                }`}
-              >
-                <tab.icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Dynamic Content Based on Active Tab */}
-        <AnimatePresence mode="wait">
-          {activeTab === 'overview' && (
-            <motion.div
-              key="overview"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-        {/* Compact Stats Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                {/* Academic Performance */}
-                <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-                  <div className="text-center">
-                    <div className="relative w-16 h-16 mx-auto mb-2">
-                      <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                        <path className="text-gray-700" stroke="currentColor" strokeWidth="2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path className="text-green-400" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" strokeDasharray={`${overallStats.averageScore * 0.628}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-lg font-bold text-white">{overallStats.averageScore.toFixed(0)}</div>
-                      </div>
-                    </div>
-                    <div className="text-xs text-gray-300">Avg Score</div>
-                  </div>
-                </div>
-
-                {/* Lessons Progress */}
-                <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-                  <div className="flex items-center justify-between mb-1">
-                    <BookOpen className="h-4 w-4 text-blue-400" />
-                    <TrendingUp className="h-3 w-3 text-green-400" />
-                  </div>
-                  <div className="text-lg font-bold text-white">
-                    {overallStats.completedLessons}<span className="text-gray-400 text-sm">/{overallStats.totalLessons}</span>
-                  </div>
-                  <div className="text-xs text-gray-300">Lessons</div>
-                  <div className="w-full bg-gray-700 rounded-full h-1 mt-1">
-                    <div className="bg-blue-500 h-1 rounded-full" style={{ width: `${(overallStats.completedLessons / overallStats.totalLessons) * 100}%` }} />
-                  </div>
-                </div>
-
-                {/* Study Streak */}
-                <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-                  <div className="flex items-center justify-between mb-1">
-                    <Flame className="h-4 w-4 text-orange-400" />
-                    <span className="text-xs text-green-400">+2</span>
-                  </div>
-                  <div className="text-lg font-bold text-white">{streakCount}</div>
-                  <div className="text-xs text-gray-300">Day Streak</div>
-                </div>
-
-                {/* Class Rank */}
-                <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-                  <div className="flex items-center justify-between mb-1">
-                    <Crown className="h-4 w-4 text-yellow-400" />
-                    <ArrowUp className="h-3 w-3 text-green-400" />
-                  </div>
-                  <div className="text-lg font-bold text-white">#{overallStats.rank}</div>
-                  <div className="text-xs text-gray-300">Rank</div>
-                </div>
-              </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Subject Progress */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
-          >
-            <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-600/50">
-              <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-blue-400" />
-                Subject Progress
-              </h2>
-              
-              <div className="space-y-2">
-                {progress.map((subject, index) => {
-                  const progressPercentage = (subject.completedLessons / subject.totalLessons) * 100
-                  return (
-                    <div key={subject.subject} className="p-2 bg-gray-700/50 rounded border border-gray-600/30">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-medium text-white text-sm">{subject.subject}</h3>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs font-medium ${getGradeColor(subject.averageScore)}`}>
-                            {subject.averageScore}%
-                          </span>
-                          <Badge variant="outline" className="text-xs">
-                            {subject.completedLessons}/{subject.totalLessons}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Progress value={progressPercentage} className="h-1.5" />
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Recent Activity */}
-          <div className="space-y-3">
-            {/* Recent Quizzes */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.6 }}
-            >
-              <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-                <h2 className="text-md font-bold text-white mb-2 flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-blue-400" />
-                  Recent Quizzes
-                </h2>
-                
-                <div className="space-y-1.5">
-                  {recentQuizzes.slice(0, 3).map((quiz, index) => (
-                    <div key={quiz.id} className="p-2 bg-gray-700/50 rounded border border-gray-600/30">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium text-white text-xs">{quiz.title}</h4>
-                          <div className="text-xs text-gray-400">{quiz.subject}</div>
-                        </div>
-                        <span className={`text-xs font-bold ${getGradeColor((quiz.score / quiz.totalQuestions) * 100)}`}>
-                          {quiz.score}/{quiz.totalQuestions}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Top Achievements */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.7 }}
-            >
-              <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-                <h2 className="text-md font-bold text-white mb-2 flex items-center gap-2">
-                  <Award className="h-4 w-4 text-yellow-400" />
-                  Top Achievements
-                </h2>
-                
-                <div className="space-y-1.5">
-                  {achievements.slice(0, 3).map((achievement, index) => (
-                    <div key={achievement.id} className="p-2 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 rounded border border-yellow-600/30">
-                      <div className="flex items-center gap-2">
-                        <div className="text-lg">{achievement.icon}</div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-white text-xs">{achievement.title}</h4>
-                          <div className="text-xs text-yellow-400">+{achievement.points} XP</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-              {/* Quick Actions for Overview Tab */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.8 }}
-                className="mt-3"
-              >
-                <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-                  <h2 className="text-md font-bold text-white mb-3">Quick Actions</h2>
-                  
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white p-2 h-auto flex-col">
-                      <PlayCircle className="h-4 w-4 mb-1" />
-                      <div className="text-xs">Continue</div>
-                    </Button>
-                    
-                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white p-2 h-auto flex-col">
-                      <Target className="h-4 w-4 mb-1" />
-                      <div className="text-xs">Quiz</div>
-                    </Button>
-                    
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white p-2 h-auto flex-col">
-                      <BookOpen className="h-4 w-4 mb-1" />
-                      <div className="text-xs">Notes</div>
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {activeTab === 'leaderboard' && (
-            <motion.div
-              key="leaderboard"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="p-6 shadow-xl border-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                  <Trophy className="h-6 w-6" />
-                  Class Leaderboard
-                  <Badge className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 ml-2">
-                    Live
-                  </Badge>
-                </h2>
-                
-                <div className="space-y-3">
-                  {leaderboard.map((student, index) => (
+                {/* Screen Content Container */}
+                <div className="relative h-full p-4 overflow-y-auto custom-scrollbar">
+                  {/* Screen Glow Effects */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/8 via-transparent to-blue-500/8 pointer-events-none rounded-xl -z-10"></div>
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/30 to-transparent -z-10"></div>    
+              {/* Main Content Wrapper */}
+                  <div className="relative z-10">
+                    {/* Professional Header */}
                     <motion.div
-                      key={student.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        student.isCurrentUser
-                          ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-300 dark:border-blue-700'
-                          : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                      }`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6 }}
+                      className="mb-6"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
-                          student.rank === 1 ? 'bg-yellow-500 text-white' :
-                          student.rank === 2 ? 'bg-gray-400 text-white' :
-                          student.rank === 3 ? 'bg-amber-600 text-white' :
-                          'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                        }`}>
-                          {student.rank <= 3 ? (
-                            student.rank === 1 ? '🥇' :
-                            student.rank === 2 ? '🥈' : '🥉'
-                          ) : (
-                            student.rank
-                          )}
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h1 className="text-2xl font-bold text-white mb-1">
+                            Welcome to Your Family! 👨‍👩‍👧‍👦
+                          </h1>
+                          <p className="text-gray-400 text-sm">
+                            Here's your family tree overview and recent activities
+                          </p>
                         </div>
-                        
-                        <div className="text-2xl">{student.avatar}</div>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className={`font-semibold ${
-                              student.isCurrentUser ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-white'
-                            }`}>
-                              {student.name}
-                              {student.isCurrentUser && <span className="text-xs ml-1">(You)</span>}
-                            </h3>
-                            <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
-                              Level {student.level}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 mt-1">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {student.points.toLocaleString()} XP
-                            </span>
-                            {student.rank <= 3 && (
-                              <Badge className={`text-xs ${
-                                student.rank === 1 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' :
-                                student.rank === 2 ? 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400' :
-                                'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400'
-                              }`}>
-                                {student.rank === 1 ? 'Champion' : student.rank === 2 ? 'Runner-up' : 'Third Place'}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        
                         <div className="text-right">
-                          <div className={`text-2xl font-bold ${
-                            student.isCurrentUser ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'
-                          }`}>
-                            #{student.rank}
-                          </div>
+                          <div className="text-sm text-gray-400 mb-1">Family Size</div>
+                          <Badge className="bg-green-600 text-white text-lg px-3 py-1">
+                            {familyStats.totalMembers} Members
+                          </Badge>
                         </div>
                       </div>
                     </motion.div>
-                  ))}
-                </div>
-                
-                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Your Progress This Week
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-500">
-                        Keep studying to climb higher!
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-green-500" />
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                        +2 positions
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          )}
 
-          {activeTab === 'analytics' && (
-            <motion.div
-              key="analytics"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                {/* Performance Chart */}
-                <Card className="p-6 shadow-xl border-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <LineChart className="h-5 w-5" />
-                    Performance Trends
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    {progress.map((subject, index) => (
-                      <div key={subject.subject} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {subject.subject}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            {getTrendIcon(subject.trend)}
-                            <span className={`text-sm font-bold ${getGradeColor(subject.averageScore)}`}>
-                              {subject.averageScore}%
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                            <div 
-                              className={`h-2 rounded-full ${getProgressColor(subject.averageScore)}`}
-                              style={{ width: `${subject.averageScore}%` }}
-                            />
-                          </div>
-                          <Badge className={`text-xs ${subject.difficulty === 'advanced' ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' : subject.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' : 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'}`}>
-                            {subject.difficulty}
-                          </Badge>
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-500">
-                          Weekly study time: {subject.weeklyHours}h
-                        </div>
+                    {/* Navigation Tabs */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="mb-4"
+                    >
+                      <div className="flex space-x-1 bg-gray-800 border border-gray-700 p-1 rounded-lg">
+                        {[
+                          { id: 'overview', label: 'Overview', icon: Home },
+                          { id: 'members', label: 'Members', icon: Users },
+                          { id: 'events', label: 'Events', icon: Calendar },
+                          { id: 'tree', label: 'Family Tree', icon: TreePine }
+                        ].map((tab) => (
+                          <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                              activeTab === tab.id
+                                ? 'bg-green-600 text-white shadow-sm'
+                                : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                            }`}
+                          >
+                            <tab.icon className="h-4 w-4" />
+                            {tab.label}
+                          </button>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </Card>
+                    </motion.div>  
+                  {/* Dynamic Content Based on Active Tab */}
+                    <AnimatePresence mode="wait">
+                      {activeTab === 'overview' && (
+                        <motion.div
+                          key="overview"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {/* Family Stats Grid */}
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                            {/* Total Members */}
+                            <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+                              <div className="text-center">
+                                <div className="relative w-16 h-16 mx-auto mb-2">
+                                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+                                    <path className="text-gray-700" stroke="currentColor" strokeWidth="2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path className="text-green-400" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" strokeDasharray={`${(familyStats.activeMembers / familyStats.totalMembers) * 100 * 0.628}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-lg font-bold text-white">{familyStats.totalMembers}</div>
+                                  </div>
+                                </div>
+                                <div className="text-xs text-gray-300">Total Members</div>
+                              </div>
+                            </div>
 
-                {/* Study Habits */}
-                <Card className="p-6 shadow-xl border-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Gauge className="h-5 w-5" />
-                    Study Insights
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                        <div>
-                          <p className="text-sm font-medium text-green-800 dark:text-green-300">
-                            Consistent Learner
-                          </p>
-                          <p className="text-xs text-green-600 dark:text-green-500">
-                            7-day study streak active
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                      <div className="flex items-center gap-3">
-                        <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                        <div>
-                          <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                            Best Learning Time
-                          </p>
-                          <p className="text-xs text-blue-600 dark:text-blue-500">
-                            7:00 PM - 9:00 PM (85% accuracy)
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                      <div className="flex items-center gap-3">
-                        <Target className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-                        <div>
-                          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                            Improvement Area
-                          </p>
-                          <p className="text-xs text-yellow-600 dark:text-yellow-500">
-                            Focus more on Physics concepts
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                      <div className="flex items-center gap-3">
-                        <Rocket className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                        <div>
-                          <p className="text-sm font-medium text-purple-800 dark:text-purple-300">
-                            Next Milestone
-                          </p>
-                          <p className="text-xs text-purple-600 dark:text-purple-500">
-                            80 XP to reach Level 11
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
+                            {/* Active Members */}
+                            <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+                              <div className="flex items-center justify-between mb-1">
+                                <Users className="h-4 w-4 text-green-400" />
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                              </div>
+                              <div className="text-lg font-bold text-white">
+                                {familyStats.activeMembers}<span className="text-gray-400 text-sm">/{familyStats.totalMembers}</span>
+                              </div>
+                              <div className="text-xs text-gray-300">Online Now</div>
+                            </div>
 
-              {/* Recent Quiz Performance */}
-              <Card className="p-6 shadow-xl border-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <PieChart className="h-5 w-5" />
-                  Recent Quiz Performance
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {recentQuizzes.map((quiz, index) => (
-                    <div key={quiz.id} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-gray-900 dark:text-white text-sm">
-                          {quiz.subject}
-                        </h4>
-                        <Badge className={`text-xs ${getDifficultyColor(quiz.difficulty)}`}>
-                          {quiz.difficulty}
-                        </Badge>
-                      </div>
-                      
-                      <div className="mb-3">
-                        <div className={`text-2xl font-bold ${getGradeColor((quiz.score / quiz.totalQuestions) * 100)}`}>
-                          {((quiz.score / quiz.totalQuestions) * 100).toFixed(0)}%
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-500">
-                          {quiz.score}/{quiz.totalQuestions} correct
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Timer className="h-3 w-3" />
-                          {quiz.timeSpent}m
-                        </div>
-                        <div>{quiz.date}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </motion.div>
-          )}
+                            {/* New Members */}
+                            <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+                              <div className="flex items-center justify-between mb-1">
+                                <UserPlus className="h-4 w-4 text-blue-400" />
+                                <span className="text-xs text-green-400">+{familyStats.newMembersThisMonth}</span>
+                              </div>
+                              <div className="text-lg font-bold text-white">{familyStats.newMembersThisMonth}</div>
+                              <div className="text-xs text-gray-300">New This Month</div>
+                            </div>
 
-          {activeTab === 'achievements' && (
-            <motion.div
-              key="achievements"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                {achievements.map((achievement, index) => (
-                  <motion.div
-                    key={achievement.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                  >
-                    <Card className={`p-6 shadow-xl border-0 bg-gradient-to-br ${getRarityColor(achievement.rarity)} text-white relative overflow-hidden`}>
-                      <div className="absolute top-2 right-2">
-                        <Badge className={`${
-                          achievement.rarity === 'legendary' ? 'bg-yellow-500 text-yellow-900' :
-                          achievement.rarity === 'epic' ? 'bg-purple-500 text-purple-900' :
-                          achievement.rarity === 'rare' ? 'bg-blue-500 text-blue-900' :
-                          'bg-gray-500 text-gray-900'
-                        } capitalize text-xs`}>
-                          {achievement.rarity}
-                        </Badge>
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="text-4xl mb-3">{achievement.icon}</div>
-                        <h3 className="text-lg font-bold mb-2">
-                          {achievement.title}
-                        </h3>
-                        <p className="text-sm text-white/90 mb-4">
-                          {achievement.description}
-                        </p>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Zap className="h-4 w-4" />
-                            <span className="font-bold">+{achievement.points} XP</span>
-                          </div>
-                          <div className="text-xs text-white/75">
-                            {achievement.earnedDate}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Sparkle effect for legendary achievements */}
-                      {achievement.rarity === 'legendary' && (
-                        <div className="absolute inset-0 pointer-events-none">
-                          {[...Array(6)].map((_, i) => (
+                            {/* Upcoming Events */}
+                            <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+                              <div className="flex items-center justify-between mb-1">
+                                <Calendar className="h-4 w-4 text-purple-400" />
+                                <ArrowUp className="h-3 w-3 text-green-400" />
+                              </div>
+                              <div className="text-lg font-bold text-white">{familyStats.upcomingEvents}</div>
+                              <div className="text-xs text-gray-300">Upcoming Events</div>
+                            </div>
+                          </div>        
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            {/* Family Members Overview */}
                             <motion.div
-                              key={i}
-                              className="absolute w-1 h-1 bg-white rounded-full"
-                              style={{
-                                left: `${20 + i * 15}%`,
-                                top: `${20 + (i % 2) * 60}%`,
-                              }}
-                              animate={{
-                                scale: [0, 1, 0],
-                                opacity: [0, 1, 0],
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                delay: i * 0.3,
-                              }}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.3, delay: 0.5 }}
+                            >
+                              <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-600/50">
+                                <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                  <Users className="h-4 w-4 text-green-400" />
+                                  Family Members
+                                </h2>
+                                
+                                <div className="space-y-2">
+                                  {familyMembers.slice(0, 4).map((member) => (
+                                    <div key={member.id} className="p-2 bg-gray-700/50 rounded border border-gray-600/30">
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                          <div className="text-2xl">{member.profilePicture}</div>
+                                          <div>
+                                            <h3 className="font-medium text-white text-sm">{member.name}</h3>
+                                            <div className="text-xs text-gray-400">{member.relation} • {member.age} years</div>
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <div className={`w-2 h-2 rounded-full ${member.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
+                                          <span className="text-xs text-gray-400">{member.lastActive}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                
+                                <Button className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white text-sm">
+                                  <UserPlus className="h-4 w-4 mr-2" />
+                                  Add Family Member
+                                </Button>
+                              </div>
+                            </motion.div>
+
+                            {/* Recent Events & Activities */}
+                            <div className="space-y-3">
+                              {/* Upcoming Events */}
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: 0.6 }}
+                              >
+                                <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+                                  <h2 className="text-md font-bold text-white mb-2 flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-purple-400" />
+                                    Upcoming Events
+                                  </h2>
+                                  
+                                  <div className="space-y-1.5">
+                                    {recentEvents.slice(0, 3).map((event) => (
+                                      <div key={event.id} className="p-2 bg-gray-700/50 rounded border border-gray-600/30">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-2">
+                                            <div className={getEventTypeColor(event.type)}>
+                                              {getEventIcon(event.type)}
+                                            </div>
+                                            <div>
+                                              <h4 className="font-medium text-white text-xs">{event.title}</h4>
+                                              <div className="text-xs text-gray-400">{event.date} • {event.attendees} attending</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </motion.div>            
+                  {/* Family Insights */}
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: 0.7 }}
+                              >
+                                <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+                                  <h2 className="text-md font-bold text-white mb-2 flex items-center gap-2">
+                                    <BarChart3 className="h-4 w-4 text-blue-400" />
+                                    Family Insights
+                                  </h2>
+                                  
+                                  <div className="space-y-1.5">
+                                    <div className="p-2 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded border border-blue-600/30">
+                                      <div className="flex items-center gap-2">
+                                        <TreePine className="h-4 w-4 text-blue-400" />
+                                        <div className="flex-1">
+                                          <h4 className="font-medium text-white text-xs">Family Tree Depth</h4>
+                                          <div className="text-xs text-blue-400">{familyStats.familyTreeDepth} Generations</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="p-2 bg-gradient-to-r from-green-900/20 to-emerald-900/20 rounded border border-green-600/30">
+                                      <div className="flex items-center gap-2">
+                                        <Users className="h-4 w-4 text-green-400" />
+                                        <div className="flex-1">
+                                          <h4 className="font-medium text-white text-xs">Average Age</h4>
+                                          <div className="text-xs text-green-400">{familyStats.averageAge} years</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="p-2 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 rounded border border-yellow-600/30">
+                                      <div className="flex items-center gap-2">
+                                        <Crown className="h-4 w-4 text-yellow-400" />
+                                        <div className="flex-1">
+                                          <h4 className="font-medium text-white text-xs">Eldest: {familyStats.oldestMember}</h4>
+                                          <div className="text-xs text-yellow-400">Youngest: {familyStats.youngestMember}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            </div>
+                          </div>
+
+                          {/* Quick Actions */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.8 }}
+                            className="mt-3"
+                          >
+                            <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+                              <h2 className="text-md font-bold text-white mb-3">Quick Actions</h2>
+                              
+                              <div className="grid grid-cols-4 gap-2">
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white p-2 h-auto flex-col">
+                                  <UserPlus className="h-4 w-4 mb-1" />
+                                  <div className="text-xs">Add Member</div>
+                                </Button>
+                                
+                                <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white p-2 h-auto flex-col">
+                                  <Calendar className="h-4 w-4 mb-1" />
+                                  <div className="text-xs">Add Event</div>
+                                </Button>
+                                
+                                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white p-2 h-auto flex-col">
+                                  <TreePine className="h-4 w-4 mb-1" />
+                                  <div className="text-xs">View Tree</div>
+                                </Button>
+                                
+                                <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white p-2 h-auto flex-col">
+                                  <Camera className="h-4 w-4 mb-1" />
+                                  <div className="text-xs">Memories</div>
+                                </Button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      )}     
+                 {activeTab === 'members' && (
+                        <motion.div
+                          key="members"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-600/50">
+                            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                              <Users className="h-5 w-5" />
+                              All Family Members
+                            </h2>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {familyMembers.map((member, index) => (
+                                <motion.div
+                                  key={member.id}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                                  className="p-4 bg-gray-700/50 rounded-lg border border-gray-600/30 hover:border-green-500/50 transition-all"
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                      <div className="text-4xl">{member.profilePicture}</div>
+                                      <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-gray-700 ${
+                                        member.isOnline ? 'bg-green-500' : 'bg-gray-500'
+                                      }`} />
+                                    </div>
+                                    
+                                    <div className="flex-1">
+                                      <h3 className="font-semibold text-white">{member.name}</h3>
+                                      <p className="text-sm text-gray-400">{member.relation} • {member.age} years old</p>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <MapPin className="h-3 w-3 text-gray-500" />
+                                        <span className="text-xs text-gray-500">{member.location}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <Clock className="h-3 w-3 text-gray-500" />
+                                        <span className="text-xs text-gray-500">Last active: {member.lastActive}</span>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex flex-col gap-1">
+                                      <Button size="sm" variant="outline" className="text-xs">
+                                        <MessageCircle className="h-3 w-3 mr-1" />
+                                        Chat
+                                      </Button>
+                                      <Button size="sm" variant="outline" className="text-xs">
+                                        <Phone className="h-3 w-3 mr-1" />
+                                        Call
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {activeTab === 'events' && (
+                        <motion.div
+                          key="events"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-600/50">
+                            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                              <Calendar className="h-5 w-5" />
+                              Family Events & Celebrations
+                            </h2>
+                            
+                            <div className="space-y-4">
+                              {recentEvents.map((event, index) => (
+                                <motion.div
+                                  key={event.id}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                                  className="p-4 bg-gray-700/50 rounded-lg border border-gray-600/30"
+                                >
+                                  <div className="flex items-start gap-4">
+                                    <div className={`p-2 rounded-lg ${getEventTypeColor(event.type)} bg-gray-600/50`}>
+                                      {getEventIcon(event.type)}
+                                    </div>
+                                    
+                                    <div className="flex-1">
+                                      <h3 className="font-semibold text-white mb-1">{event.title}</h3>
+                                      <p className="text-sm text-gray-400 mb-2">{event.description}</p>
+                                      
+                                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                                        <div className="flex items-center gap-1">
+                                          <Calendar className="h-3 w-3" />
+                                          {event.date}
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <MapPin className="h-3 w-3" />
+                                          {event.location}
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <Users className="h-3 w-3" />
+                                          {event.attendees} attending
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <Badge className={`capitalize ${getEventTypeColor(event.type)}`}>
+                                      {event.type}
+                                    </Badge>
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}  
+                    {activeTab === 'tree' && (
+                        <motion.div
+                          key="tree"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 border border-gray-600/50">
+                            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                              <TreePine className="h-5 w-5" />
+                              Family Tree Overview
+                            </h2>
+                            
+                            <div className="text-center py-8">
+                              <TreePine className="h-16 w-16 mx-auto text-green-400 mb-4" />
+                              <h3 className="text-xl font-semibold text-white mb-2">Interactive Family Tree</h3>
+                              <p className="text-gray-400 mb-6">
+                                Explore your family connections and relationships in an interactive tree view
+                              </p>
+                              
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div className="p-3 bg-gray-700/50 rounded-lg">
+                                  <div className="text-2xl font-bold text-green-400">{familyStats.familyTreeDepth}</div>
+                                  <div className="text-xs text-gray-400">Generations</div>
+                                </div>
+                                <div className="p-3 bg-gray-700/50 rounded-lg">
+                                  <div className="text-2xl font-bold text-blue-400">{familyStats.totalMembers}</div>
+                                  <div className="text-xs text-gray-400">Total Members</div>
+                                </div>
+                                <div className="p-3 bg-gray-700/50 rounded-lg">
+                                  <div className="text-2xl font-bold text-purple-400">{familyStats.averageAge}</div>
+                                  <div className="text-xs text-gray-400">Avg Age</div>
+                                </div>
+                                <div className="p-3 bg-gray-700/50 rounded-lg">
+                                  <div className="text-2xl font-bold text-yellow-400">5</div>
+                                  <div className="text-xs text-gray-400">Branches</div>
+                                </div>
+                              </div>
+                              
+                              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                                <TreePine className="h-4 w-4 mr-2" />
+                                Open Interactive Tree
+                              </Button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                  
+                  {/* Screen Status Bar */}
+                  <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/50 backdrop-blur-sm border-t border-gray-700/50 flex items-center justify-between px-4">
+                    <div className="flex items-center gap-4">
+                      {/* Power Status */}
+                      <div className="flex items-center gap-1">
+                        <motion.div 
+                          className="w-1.5 h-1.5 bg-green-400 rounded-full"
+                          animate={{ opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                        <span className="text-xs text-green-400 font-mono">FAMILY CONNECTED</span>
+                      </div>
+                      
+                      {/* Connection Status */}
+                      <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4].map((bar) => (
+                            <motion.div
+                              key={bar}
+                              className="w-0.5 bg-green-400 rounded-full"
+                              style={{ height: `${bar * 1.5 + 2}px` }}
+                              animate={{ opacity: [0.3, 1, 0.3] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: bar * 0.1 }}
                             />
                           ))}
                         </div>
-                      )}
-                    </Card>
-                  </motion.div>
-                ))}
-                
-                {/* Coming Soon Achievements */}
-                <Card className="p-6 shadow-xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                  <div className="text-center">
-                    <div className="text-4xl mb-3 opacity-50">🔒</div>
-                    <h3 className="text-lg font-bold mb-2 text-gray-600 dark:text-gray-400">
-                      Coming Soon
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
-                      More achievements to unlock!
-                    </p>
-                    <div className="text-xs text-gray-400 dark:text-gray-600">
-                      Keep studying to unlock new badges
-                    </div>
-                  </div>
-                </Card>
-              </div>
-              
-              {/* Achievement Progress */}
-              <Card className="p-6 shadow-xl border-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Star className="h-5 w-5" />
-                  Achievement Progress
-                </h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Quiz Completionist (7/10 quizzes)
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-500">70%</span>
-                    </div>
-                    <Progress value={70} className="h-2" />
-                  </div>
-                  
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Study Warrior (25/30 days)
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-500">83%</span>
-                    </div>
-                    <Progress value={83} className="h-2" />
-                  </div>
-                  
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Perfect Scholar (2/5 perfect scores)
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-500">40%</span>
-                    </div>
-                    <Progress value={40} className="h-2" />
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-                </div>
-                
-                {/* Screen Status Bar */}
-                <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/50 backdrop-blur-sm border-t border-gray-700/50 flex items-center justify-between px-4">
-                  <div className="flex items-center gap-4">
-                    {/* Power Status */}
-                    <div className="flex items-center gap-1">
-                      <motion.div 
-                        className="w-1.5 h-1.5 bg-green-400 rounded-full"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                      <span className="text-xs text-green-400 font-mono">ACTIVE</span>
+                        <span className="text-xs text-green-400 font-mono">{familyStats.activeMembers}/{familyStats.totalMembers}</span>
+                      </div>
                     </div>
                     
-                    {/* Connection Status */}
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4].map((bar) => (
-                          <motion.div
-                            key={bar}
-                            className="w-0.5 bg-blue-400 rounded-full"
-                            style={{ height: `${bar * 1.5 + 2}px` }}
-                            animate={{ opacity: [0.3, 1, 0.3] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: bar * 0.1 }}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-blue-400 font-mono">100%</span>
+                    {/* System Info */}
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-400 font-mono">APNA-PARIVAR v2.1</span>
+                      <span className="text-xs text-cyan-400 font-mono">{new Date().toLocaleTimeString()}</span>
                     </div>
                   </div>
-                  
-                  {/* System Info */}
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs text-gray-400 font-mono">IGNITE-DASH v2.1</span>
-                    <span className="text-xs text-cyan-400 font-mono">{new Date().toLocaleTimeString()}</span>
-                  </div>
                 </div>
-                
-                </div>
-                {/* End Main Content Wrapper */}
                 
                 {/* Scan Lines Effect */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl -z-20">
                   <motion.div
-                    className="absolute inset-x-0 bg-gradient-to-b from-transparent via-cyan-400/10 to-transparent h-3 opacity-60"
+                    className="absolute inset-x-0 bg-gradient-to-b from-transparent via-green-400/10 to-transparent h-3 opacity-60"
                     animate={{ y: [-12, '85vh'] }}
                     transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   />
@@ -1100,9 +757,8 @@ export default function DashboardPage() {
                 <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-white/5 to-transparent rounded-tr-xl pointer-events-none -z-20"></div>
               </div>
             </div>
-          </div>
-          
-          {/* Monitor Stand and Base */}
+          </div>  
+        {/* Monitor Stand and Base */}
           <div className="flex flex-col items-center">
             {/* Stand Neck */}
             <div className="w-6 h-12 bg-gradient-to-b from-gray-600 to-gray-700 rounded-b-lg shadow-lg"></div>
@@ -1116,12 +772,12 @@ export default function DashboardPage() {
             
             {/* Brand Label on Base */}
             <div className="mt-2">
-              <span className="text-xs text-gray-500 font-mono tracking-wider">QUANTUM SERIES</span>
+              <span className="text-xs text-gray-500 font-mono tracking-wider">FAMILY SERIES</span>
             </div>
           </div>
           
           {/* Ambient Lighting Effects */}
-          <div className="absolute -inset-8 bg-gradient-to-b from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl pointer-events-none -z-40"></div>
+          <div className="absolute -inset-8 bg-gradient-to-b from-green-500/5 via-transparent to-blue-500/5 rounded-3xl pointer-events-none -z-40"></div>
           
           {/* Desktop Shadow */}
           <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-96 h-8 bg-black/20 rounded-full blur-xl"></div>
