@@ -3,12 +3,12 @@
 
 -- Insert sample notes with images
 INSERT INTO notes (subject_name, subject_code, scheme, semester, class, file_url, thumbnail_url, uploaded_by, description, tags, download_count, view_count, file_size, page_count) VALUES
-('Advanced Mathematics', 'MATH12', '2025', NULL, '12', '/notes/math12.pdf', '/thumbnails/math.jpg', 'IgniteVidya Faculty', 'Comprehensive calculus and algebra notes for Class 12', ARRAY['calculus', 'algebra', 'mathematics'], 145, 523, '2.5 MB', 85),
-('Organic Chemistry', 'CHEM11', '2025', NULL, '11', '/notes/chem11.pdf', '/thumbnails/chemistry.jpg', 'IgniteVidya Faculty', 'Complete organic chemistry notes with reactions', ARRAY['chemistry', 'organic', 'reactions'], 98, 412, '3.2 MB', 102),
-('Physics - Mechanics', 'PHYS11', '2025', NULL, '11', '/notes/phys11.pdf', '/thumbnails/physics.jpg', 'IgniteVidya Faculty', 'Mechanics, kinematics, and Newton''s laws explained', ARRAY['physics', 'mechanics', 'kinematics'], 167, 678, '2.8 MB', 95),
-('Biology - Genetics', 'BIOL12', '2024', NULL, '12', '/notes/bio12.pdf', '/thumbnails/biology.jpg', 'IgniteVidya Faculty', 'Genetics, heredity, and DNA structure notes', ARRAY['biology', 'genetics', 'DNA'], 89, 345, '2.1 MB', 72),
-('Computer Science', 'CS12', '2025', NULL, '12', '/notes/cs12.pdf', '/thumbnails/computer.jpg', 'IgniteVidya Faculty', 'Python programming and data structures', ARRAY['programming', 'python', 'data-structures'], 234, 891, '3.5 MB', 120),
-('English Literature', 'ENG10', '2024', NULL, '10', '/notes/eng10.pdf', '/thumbnails/english.jpg', 'IgniteVidya Faculty', 'Shakespeare, poetry, and prose analysis', ARRAY['literature', 'shakespeare', 'poetry'], 76, 298, '1.8 MB', 65);
+('Advanced Mathematics', 'MATH12', '2025', NULL, '12', '/notes/math12.pdf', '/thumbnails/math.jpg', 'Apna Parivar Faculty', 'Comprehensive calculus and algebra notes for Class 12', ARRAY['calculus', 'algebra', 'mathematics'], 145, 523, '2.5 MB', 85),
+('Organic Chemistry', 'CHEM11', '2025', NULL, '11', '/notes/chem11.pdf', '/thumbnails/chemistry.jpg', 'Apna Parivar Faculty', 'Complete organic chemistry notes with reactions', ARRAY['chemistry', 'organic', 'reactions'], 98, 412, '3.2 MB', 102),
+('Physics - Mechanics', 'PHYS11', '2025', NULL, '11', '/notes/phys11.pdf', '/thumbnails/physics.jpg', 'Apna Parivar Faculty', 'Mechanics, kinematics, and Newton''s laws explained', ARRAY['physics', 'mechanics', 'kinematics'], 167, 678, '2.8 MB', 95),
+('Biology - Genetics', 'BIOL12', '2024', NULL, '12', '/notes/bio12.pdf', '/thumbnails/biology.jpg', 'Apna Parivar Faculty', 'Genetics, heredity, and DNA structure notes', ARRAY['biology', 'genetics', 'DNA'], 89, 345, '2.1 MB', 72),
+('Computer Science', 'CS12', '2025', NULL, '12', '/notes/cs12.pdf', '/thumbnails/computer.jpg', 'Apna Parivar Faculty', 'Python programming and data structures', ARRAY['programming', 'python', 'data-structures'], 234, 891, '3.5 MB', 120),
+('English Literature', 'ENG10', '2024', NULL, '10', '/notes/eng10.pdf', '/thumbnails/english.jpg', 'Apna Parivar Faculty', 'Shakespeare, poetry, and prose analysis', ARRAY['literature', 'shakespeare', 'poetry'], 76, 298, '1.8 MB', 65);
 
 -- Insert sample comments for notes
 INSERT INTO notes_comments (note_id, text, author, created_at) 
@@ -25,9 +25,9 @@ FROM notes WHERE subject_code = 'PHYS11';
 
 -- Insert sample question papers
 INSERT INTO question_papers (subject_code, subject_name, year, semester, branch, exam_type, file_url, thumbnail_url, uploaded_by, description, tags, download_count, view_count, file_size) VALUES
-('MATH12', 'Advanced Mathematics', 2024, 2, 'Science', 'Board Exam', '/papers/math12-2024.pdf', '/thumbnails/paper-math.jpg', 'IgniteVidya Faculty', '2024 Board examination paper', ARRAY['board-exam', '2024', 'mathematics'], 234, 567, '1.2 MB'),
-('PHYS11', 'Physics', 2024, 1, 'Science', 'Mid-term', '/papers/phys11-2024.pdf', '/thumbnails/paper-physics.jpg', 'IgniteVidya Faculty', 'Mid-term examination 2024', ARRAY['mid-term', 'physics'], 156, 423, '0.9 MB'),
-('CHEM11', 'Chemistry', 2024, 1, 'Science', 'Final', '/papers/chem11-2024.pdf', '/thumbnails/paper-chemistry.jpg', 'IgniteVidya Faculty', 'Final examination paper', ARRAY['final-exam', 'chemistry'], 189, 501, '1.1 MB');
+('MATH12', 'Advanced Mathematics', 2024, 2, 'Science', 'Board Exam', '/papers/math12-2024.pdf', '/thumbnails/paper-math.jpg', 'Apna Parivar Faculty', '2024 Board examination paper', ARRAY['board-exam', '2024', 'mathematics'], 234, 567, '1.2 MB'),
+('PHYS11', 'Physics', 2024, 1, 'Science', 'Mid-term', '/papers/phys11-2024.pdf', '/thumbnails/paper-physics.jpg', 'Apna Parivar Faculty', 'Mid-term examination 2024', ARRAY['mid-term', 'physics'], 156, 423, '0.9 MB'),
+('CHEM11', 'Chemistry', 2024, 1, 'Science', 'Final', '/papers/chem11-2024.pdf', '/thumbnails/paper-chemistry.jpg', 'Apna Parivar Faculty', 'Final examination paper', ARRAY['final-exam', 'chemistry'], 189, 501, '1.1 MB');
 
 -- Insert sample lab programs
 INSERT INTO lab_programs (lab_title, program_number, description, code, expected_output, semester, language, difficulty, thumbnail_url, tags, view_count) VALUES

@@ -15,12 +15,12 @@ interface Message {
 }
 
 interface TerminalChatProps {
-  isIgniteVidyaCompanionOpen: boolean;
+  isApnaParivCompanionOpen: boolean;
   onOpen: () => void;
 }
 
 export default function TerminalChat({
-  isIgniteVidyaCompanionOpen,
+  isApnaParivCompanionOpen,
   onOpen,
 }: TerminalChatProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +28,7 @@ export default function TerminalChat({
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "IgniteVidya Terminal v1.0 initialized\nType 'help' for available commands",
+      text: "Apna Parivar Terminal v1.0 initialized\nType 'help' for available commands",
       isUser: false,
       timestamp: new Date(),
     },
@@ -54,15 +54,15 @@ export default function TerminalChat({
     }
   }, [isOpen, isMinimized]);
 
-  // Close terminal when IgniteVidya Companion opens
+  // Close terminal when Apna Parivar Companion opens
   useEffect(() => {
-    if (isIgniteVidyaCompanionOpen && isOpen) {
+    if (isApnaParivCompanionOpen && isOpen) {
       setIsOpen(false);
     }
-  }, [isIgniteVidyaCompanionOpen, isOpen]);
+  }, [isApnaParivCompanionOpen, isOpen]);
 
   const handleOpen = () => {
-    onOpen(); // This will close IgniteVidya Companion
+    onOpen(); // This will close Apna Parivar Companion
     setIsOpen(true);
   };
 
@@ -74,7 +74,7 @@ export default function TerminalChat({
       return `Available commands:
 • help - Show this help message
 • clear - Clear terminal
-• about - About IgniteVidya
+• about - About Apna Parivar
 • notes - Access study notes
 • lectures - View video lessons
 • ai-tutor - Smart learning assistant
@@ -88,7 +88,7 @@ export default function TerminalChat({
       setMessages([
         {
           id: Date.now().toString(),
-          text: "IgniteVidya Terminal v1.0 initialized\nType 'help' for available commands",
+          text: "Apna Parivar Terminal v1.0 initialized\nType 'help' for available commands",
           isUser: false,
           timestamp: new Date(),
         },
@@ -97,25 +97,25 @@ export default function TerminalChat({
     }
 
     if (cmd === "about") {
-      return `IgniteVidya - Your Academic Companion
+      return `Apna Parivar - Your Academic Companion
 Version: 1.0.0
 Built for: STEM Students (Grades 6-12)
 Features: Notes, Lectures, Games, AI Tutor, Quiz, Dashboard
-Developer: IgniteVidya Team
-Mission: Equal learning for all`;
+Developer: Apna Parivar Team
+Mission: Family connections for all`;
     }
 
     if (cmd === "version") {
-      return "IgniteVidya Terminal v1.0.0\nBuilt with Next.js, React, TypeScript, and Framer Motion";
+      return "Apna Parivar Terminal v1.0.0\nBuilt with Next.js, React, TypeScript, and Framer Motion";
     }
 
     if (cmd === "contact") {
       return `Contact Information:
-Email: support@ignitevidya.com
-YouTube: youtube.com/@ignitevidya
-Facebook: facebook.com/ignitevidya
-Instagram: instagram.com/ignitevidya
-Website: ignitevidya.com
+Email: support@apnaparivar.com
+YouTube: youtube.com/@apnaparivar
+Facebook: facebook.com/apnaparivar
+Instagram: instagram.com/apnaparivar
+Website: apnaparivar.com
 Support: Available 24/7`;
     }
 
@@ -261,7 +261,7 @@ Track your progress with 'dashboard' command!`;
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
               <span className="text-zinc-300 text-xs ml-4">
-                ignitevidya-terminal
+                apna-parivar-terminal
               </span>
             </div>
             <div className="flex items-center space-x-1">

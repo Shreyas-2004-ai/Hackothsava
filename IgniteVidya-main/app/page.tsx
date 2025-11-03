@@ -52,7 +52,7 @@ export default function HomePage() {
 
   // Inspirational quotes for STEM learning
   const quotes = [
-    "Equal learning for all - IgniteVidya",
+    "Family connections for all - Apna Parivar",
     "Science is the poetry of reality - Richard Dawkins",
     "The future belongs to those who learn more skills - Alvin Toffler",
     "Education is the most powerful weapon to change the world - Nelson Mandela",
@@ -639,7 +639,7 @@ export default function HomePage() {
 
         <div className="relative z-30 w-full flex justify-center">
           <div className="max-w-6xl text-center">
-            {/* Online Users Badge */}
+            {/* Families Connected Badge */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -648,7 +648,7 @@ export default function HomePage() {
               <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
               <Users className="h-2 w-2 text-zinc-600 dark:text-zinc-400" />
               <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
-                {onlineUsers.toLocaleString()} online
+                1,202 families connected
               </span>
             </motion.div>
 
@@ -661,7 +661,7 @@ export default function HomePage() {
               <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 mb-2">
                 <Sparkles className="h-2 w-2 text-zinc-600 dark:text-zinc-400" />
                 <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
-                  Your Academic Companion
+                  Your Family Heritage Companion
                 </span>
               </div>
 
@@ -697,7 +697,7 @@ export default function HomePage() {
                     ease: "easeInOut",
                   }}
                 >
-                  IGNITE
+                  APNA
                 </motion.span>
                 <motion.span
                   className="text-zinc-400 dark:text-zinc-600"
@@ -716,14 +716,12 @@ export default function HomePage() {
                     delay: 0.5,
                   }}
                 >
-                  VIDYA
+                  PARIVAR
                 </motion.span>
               </motion.h1>
 
               <p className="text-sm md:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed px-2">
-                Equal learning for all. Interactive STEM education for grades
-                6-12 with gamification, AI tutoring, and personalized learning
-                paths.
+                Family connections for all. Interactive family tree management with secure authentication, multi-generational mapping, and personalized relationship tracking.
               </p>
 
               {/* Rotating Quotes */}
@@ -753,7 +751,7 @@ export default function HomePage() {
                 <Input
                   ref={searchInputRef}
                   type="text"
-                  placeholder="Search subjects, notes, lectures..."
+                  placeholder="Search family members, relationships, ancestors..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -1175,7 +1173,7 @@ export default function HomePage() {
                   STEM Education Platform
                 </p>
                 <p className="text-xs text-zinc-500 dark:text-zinc-500">
-                  Equal learning for all
+                  Family connections for all
                 </p>
               </div>
             </div>

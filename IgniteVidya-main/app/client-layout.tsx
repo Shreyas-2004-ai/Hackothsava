@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import Navigation from "@/components/navigation"
 import TerminalChat from "@/components/terminal-chat"
-import IgniteVidyaCompanion from "@/components/afzal-chat"
+import ApnaParivCompanion from "@/components/afzal-chat"
 import SplashScreen from "@/components/splash-screen"
 import AudioManager from "@/components/audio-manager"
 import { useState, useEffect } from "react"
@@ -22,7 +22,7 @@ export default function ClientLayout({
   const [showSplash, setShowSplash] = useState(true)
   const [mounted, setMounted] = useState(false)
   const [isTerminalOpen, setIsTerminalOpen] = useState(false)
-  const [isIgniteVidyaCompanionOpen, setIsIgniteVidyaCompanionOpen] = useState(false)
+  const [isApnaParivCompanionOpen, setIsApnaParivCompanionOpen] = useState(false)
   const [audioEnabled, setAudioEnabled] = useState(false)
 
   useEffect(() => {
@@ -30,13 +30,13 @@ export default function ClientLayout({
   }, [])
 
   const handleTerminalOpen = () => {
-    setIsIgniteVidyaCompanionOpen(false)
+    setIsApnaParivCompanionOpen(false)
     setIsTerminalOpen(true)
   }
 
-  const handleIgniteVidyaCompanionOpen = () => {
+  const handleApnaParivCompanionOpen = () => {
     setIsTerminalOpen(false)
-    setIsIgniteVidyaCompanionOpen(true)
+    setIsApnaParivCompanionOpen(true)
   }
 
   const handleSplashComplete = () => {
@@ -59,8 +59,8 @@ export default function ClientLayout({
         <>
           <Navigation />
           <main>{children}</main>
-          <TerminalChat isIgniteVidyaCompanionOpen={isIgniteVidyaCompanionOpen} onOpen={handleTerminalOpen} />
-          <IgniteVidyaCompanion isTerminalOpen={isTerminalOpen} onOpen={handleIgniteVidyaCompanionOpen} />
+          <TerminalChat isApnaParivCompanionOpen={isApnaParivCompanionOpen} onOpen={handleTerminalOpen} />
+          <ApnaParivCompanion isTerminalOpen={isTerminalOpen} onOpen={handleApnaParivCompanionOpen} />
           <Toaster />
           {/* Audio Manager - starts after splash screen */}
           {audioEnabled && (

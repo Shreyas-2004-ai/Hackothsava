@@ -13,13 +13,13 @@ const pressStart2P = Press_Start_2P({
 
 export const metadata: Metadata = {
   title: "IgniteVidya - STEM Learning Platform",
-  description: "Equal learning for all. Interactive STEM education for grades 6-12 with gamification, AI tutoring, and personalized learning paths.",
+  description: "Family connections for all. Interactive family tree management with secure authentication, multi-generational mapping, and personalized relationship tracking.",
   generator: 'IgniteVidya',
   keywords: ['STEM', 'Education', 'Learning', 'Science', 'Technology', 'Engineering', 'Mathematics', 'Students', 'Grades 6-12'],
   authors: [{ name: 'IgniteVidya Team' }],
   openGraph: {
     title: 'IgniteVidya - STEM Learning Platform',
-    description: 'Equal learning for all. Interactive STEM education for grades 6-12.',
+    description: 'Family connections for all. Interactive family tree management with secure authentication, multi-generational mapping, and personalized relationship tracking.',
     type: 'website',
   },
 }

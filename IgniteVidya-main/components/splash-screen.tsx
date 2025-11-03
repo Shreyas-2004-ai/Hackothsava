@@ -192,12 +192,12 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                     <div className="mb-3">
                       <img 
                         src="/vtu-logo.png" 
-                        alt="IgniteVidya Logo"
+                        alt="Apna Parivar Logo"
                         className="w-28 h-28 mx-auto object-contain"
                       />
                     </div>
                     
-                    {/* IgniteVidya Text - Mobile Optimized */}
+                    {/* Apna Parivar Text - Mobile Optimized */}
                     <div className="text-center">
                       <h2 className="text-lg font-bold text-white mb-2 font-mono tracking-wider pixel-font">
                         <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
@@ -207,7 +207,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                           VIDYA
                         </span>
                       </h2>
-                      <p className="text-sm text-cyan-200 mb-1 font-mono tracking-wide pixel-text">EQUAL LEARNING FOR ALL</p>
+                      <p className="text-sm text-cyan-200 mb-1 font-mono tracking-wide pixel-text">FAMILY CONNECTIONS FOR ALL</p>
                       <p className="text-xs text-purple-200 font-mono tracking-wider pixel-text">STEM EDUCATION PLATFORM</p>
                     </div>
                   </motion.div>
@@ -360,12 +360,12 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                     <div className="mb-3">
                       <img 
                         src="/vtu-logo.png" 
-                        alt="IgniteVidya Logo"
+                        alt="Apna Parivar Logo"
                         className="w-56 h-56 mx-auto object-contain"
                       />
                     </div>
                     
-                    {/* IgniteVidya Text */}
+                    {/* Apna Parivar Text */}
                     <div className="text-center">
                       <h2 className="text-3xl font-bold text-white mb-2 font-mono tracking-wider pixel-font">
                         <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
@@ -375,7 +375,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                           VIDYA
                         </span>
                       </h2>
-                      <p className="text-lg text-cyan-200 mb-1 font-mono tracking-wide pixel-text">EQUAL LEARNING FOR ALL</p>
+                      <p className="text-lg text-cyan-200 mb-1 font-mono tracking-wide pixel-text">FAMILY CONNECTIONS FOR ALL</p>
                       <p className="text-sm text-purple-200 font-mono tracking-widest pixel-text">STEM EDUCATION PLATFORM</p>
                     </div>
                   </motion.div>

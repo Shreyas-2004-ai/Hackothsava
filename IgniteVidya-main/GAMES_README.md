@@ -1,4 +1,4 @@
-# IgniteVidya Games - Gamified STEM Learning Platform
+# Apna Parivar Games - Gamified STEM Learning Platform
 
 A comprehensive gamified STEM learning interface designed specifically for Odisha students across different education levels.
 

@@ -106,10 +106,10 @@ export default function Navigation() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xl font-bold text-black dark:text-white">
-                    IgniteVidya
+                    Apna Parivar
                   </span>
                   <span className="text-xs text-gray-600 dark:text-gray-400 hidden md:block">
-                    Equal learning for all
+                    Family connections for all
                   </span>
                 </div>
               </Link>

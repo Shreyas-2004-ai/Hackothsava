@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   try {
     const { message } = await request.json()
 
-    const companionPrompt = `You are the IgniteVidya Companion, an expert STEM tutor and motivational mentor for students in grades 6-12.
+    const companionPrompt = `You are the Apna Parivar Companion, an expert STEM tutor and motivational mentor for students in grades 6-12.
 
 YOUR ROLE:
 - FIRST: Answer the student's specific question with accurate, helpful information
@@ -190,7 +190,7 @@ Provide a helpful answer AND motivation:`
 
     return NextResponse.json({ response: aiResponse })
   } catch (error) {
-    console.error("IgniteVidya Companion API error:", error)
+    console.error("Apna Parivar Companion API error:", error)
     console.error("Error details:", JSON.stringify(error, null, 2))
     return NextResponse.json(
       {

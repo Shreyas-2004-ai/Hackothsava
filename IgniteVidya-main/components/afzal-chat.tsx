@@ -15,18 +15,18 @@ interface Message {
   timestamp: Date
 }
 
-interface IgniteVidyaCompanionProps {
+interface ApnaParivCompanionProps {
   isTerminalOpen: boolean
   onOpen: () => void
 }
 
-export default function IgniteVidyaCompanion({ isTerminalOpen, onOpen }: IgniteVidyaCompanionProps) {
+export default function ApnaParivCompanion({ isTerminalOpen, onOpen }: ApnaParivCompanionProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm your IgniteVidya Companion 🌟 I'm here to motivate you in your STEM learning journey, help you excel in your studies, and support you through grades 6-12 subjects! Let's achieve academic greatness together! 💪 What can I help you with today?",
+      text: "Hello! I'm your Apna Parivar Companion 🌟 I'm here to motivate you in your STEM learning journey, help you excel in your studies, and support you through grades 6-12 subjects! Let's achieve academic greatness together! 💪 What can I help you with today?",
       isUser: false,
       timestamp: new Date(),
     },
@@ -51,7 +51,7 @@ export default function IgniteVidyaCompanion({ isTerminalOpen, onOpen }: IgniteV
     }
   }, [isOpen, isMinimized])
 
-  // Close IgniteVidya Companion when Terminal opens
+  // Close Apna Parivar Companion when Terminal opens
   useEffect(() => {
     if (isTerminalOpen && isOpen) {
       setIsOpen(false)
@@ -87,7 +87,7 @@ export default function IgniteVidyaCompanion({ isTerminalOpen, onOpen }: IgniteV
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/ignitevidya-companion", {
+      const response = await fetch("/api/apna-parivar-companion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
@@ -156,7 +156,7 @@ export default function IgniteVidyaCompanion({ isTerminalOpen, onOpen }: IgniteV
                 <Bot className="h-3 w-3 md:h-4 md:w-4" />
               </div>
               <div>
-                <h3 className="font-bold text-sm md:text-base">IgniteVidya Companion</h3>
+                <h3 className="font-bold text-sm md:text-base">Apna Parivar Companion</h3>
                 <div className="flex items-center gap-1 md:gap-2">
                   <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                   <p className="text-xs opacity-90">{onlineCount} students online</p>
@@ -256,7 +256,7 @@ export default function IgniteVidyaCompanion({ isTerminalOpen, onOpen }: IgniteV
                   </Button>
                 </div>
                 <div className="flex items-center justify-between mt-1 md:mt-2">
-                  <p className="text-xs text-zinc-500">Powered by AI • IgniteVidya</p>
+                  <p className="text-xs text-zinc-500">Powered by AI • Apna Parivar</p>
                   <Badge variant="secondary" className="text-xs">
                     <Sparkles className="h-2 w-2 mr-1" />
                     Smart

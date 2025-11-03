@@ -26,7 +26,7 @@ export default function FloatingChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm your IgniteVidya assistant. How can I help you with STEM learning today?",
+      text: "Hello! I'm your Apna Parivar assistant. How can I help you with STEM learning today?",
       isUser: false,
       timestamp: new Date(),
     },
@@ -71,7 +71,7 @@ export default function FloatingChat() {
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response || "I'm here to help with STEM learning and IgniteVidya features!",
+        text: data.response || "I'm here to help with STEM learning and Apna Parivar features!",
         isUser: false,
         timestamp: new Date(),
       }
@@ -122,7 +122,7 @@ export default function FloatingChat() {
       <CardHeader className="flex flex-row items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="flex items-center space-x-2">
           <Terminal className="h-5 w-5 text-primary" />
-          <CardTitle className="text-lg">IgniteVidya Assistant</CardTitle>
+          <CardTitle className="text-lg">Apna Parivar Assistant</CardTitle>
           <Badge variant="secondary" className="text-xs">
             Online
           </Badge>

@@ -1,11 +1,11 @@
-// Simple test for IgniteVidya Companion API
+// Simple test for Apna Parivar Companion API
 const fetch = require('node-fetch');
 
 async function testAPI() {
   try {
-    console.log('🧪 Testing IgniteVidya Companion API...');
+    console.log('🧪 Testing Apna Parivar Companion API...');
     
-    const response = await fetch('http://localhost:3000/api/ignitevidya-companion', {
+    const response = await fetch('http://localhost:3000/api/apna-parivar-companion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

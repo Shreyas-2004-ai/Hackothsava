@@ -61,7 +61,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">IgniteVidya</h1>
-          <p className="text-gray-600 dark:text-gray-400">Equal learning for all</p>
+          <p className="text-gray-600 dark:text-gray-400">Family connections for all</p>
         </div>
 
         {/* Login Form */}
