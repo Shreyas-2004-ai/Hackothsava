@@ -43,6 +43,8 @@ export default function LoginPage() {
           return;
         }
 
+        console.log("Attempting to sign up with:", formData.email);
+        
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -55,21 +57,33 @@ export default function LoginPage() {
           },
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Signup error:", error);
+          throw error;
+        }
 
-        alert("Account created successfully! Please check your email to confirm your account, then sign in.");
+        console.log("Signup successful:", data);
+        alert("Account created successfully! You can now sign in.");
         setIsSignUp(false);
         setFormData({ ...formData, password: "", confirmPassword: "" });
       } else {
         // Sign in existing user
+        console.log("Attempting to sign in with:", formData.email);
+        
         const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
 
         if (error) {
+          console.error("Sign in error:", error);
           if (error.message === "Email not confirmed") {
             alert("Please check your email and click the confirmation link before signing in.");
+            setIsLoading(false);
+            return;
+          }
+          if (error.message === "Invalid login credentials") {
+            alert("Invalid email or password. Please check your credentials and try again.");
             setIsLoading(false);
             return;
           }
@@ -77,7 +91,8 @@ export default function LoginPage() {
         }
 
         // Successfully signed in - redirect to home page
-        console.log("Sign in successful, redirecting...");
+        console.log("Sign in successful:", data);
+        console.log("Redirecting to home page...");
         
         // Use window.location for a hard redirect to ensure middleware runs
         window.location.href = "/";
