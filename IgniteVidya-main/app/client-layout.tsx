@@ -1,79 +1,90 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
-import Navigation from "@/components/navigation"
-import TerminalChat from "@/components/terminal-chat"
-import ApnaParivCompanion from "@/components/afzal-chat"
-import SplashScreen from "@/components/splash-screen"
-import AudioManager from "@/components/audio-manager"
-import { AuthProvider } from "@/contexts/AuthContext"
-import { useState, useEffect } from "react"
+import type React from "react";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import Navigation from "@/components/navigation";
+import TerminalChat from "@/components/terminal-chat";
+import ApnaParivCompanion from "@/components/afzal-chat";
+import SplashScreen from "@/components/splash-screen";
+import AudioManager from "@/components/audio-manager";
+import FloatingChatWidget from "@/components/floating-chat-widget";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export default function ClientLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const [showSplash, setShowSplash] = useState(true)
-  const [mounted, setMounted] = useState(false)
-  const [isTerminalOpen, setIsTerminalOpen] = useState(false)
-  const [isApnaParivCompanionOpen, setIsApnaParivCompanionOpen] = useState(false)
-  const [audioEnabled, setAudioEnabled] = useState(false)
+  const [showSplash, setShowSplash] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [isApnaParivCompanionOpen, setIsApnaParivCompanionOpen] =
+    useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   const handleTerminalOpen = () => {
-    setIsApnaParivCompanionOpen(false)
-    setIsTerminalOpen(true)
-  }
+    setIsApnaParivCompanionOpen(false);
+    setIsTerminalOpen(true);
+  };
 
   const handleApnaParivCompanionOpen = () => {
-    setIsTerminalOpen(false)
-    setIsApnaParivCompanionOpen(true)
-  }
+    setIsTerminalOpen(false);
+    setIsApnaParivCompanionOpen(true);
+  };
 
   const handleSplashComplete = () => {
-    setShowSplash(false)
+    setShowSplash(false);
     // Enable audio after splash screen with a small delay
     setTimeout(() => {
-      setAudioEnabled(true)
-    }, 500)
-  }
+      setAudioEnabled(true);
+    }, 500);
+  };
 
   if (!mounted) {
-    return <div className="min-h-screen bg-black" />
+    return <div className="min-h-screen bg-black" />;
   }
 
   return (
     <AuthProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
         {showSplash ? (
           <SplashScreen onComplete={handleSplashComplete} />
         ) : (
           <>
             <Navigation />
             <main>{children}</main>
-            <TerminalChat isApnaParivCompanionOpen={isApnaParivCompanionOpen} onOpen={handleTerminalOpen} />
-            <ApnaParivCompanion isTerminalOpen={isTerminalOpen} onOpen={handleApnaParivCompanionOpen} />
+            <TerminalChat
+              isApnaParivCompanionOpen={isApnaParivCompanionOpen}
+              onOpen={handleTerminalOpen}
+            />
+            <ApnaParivCompanion
+              isTerminalOpen={isTerminalOpen}
+              onOpen={handleApnaParivCompanionOpen}
+            />
+            <FloatingChatWidget />
             <Toaster />
             {/* Audio Manager - starts after splash screen */}
             {audioEnabled && (
-              <AudioManager 
-                autoPlay={true} 
-                showControls={true}
-              />
+              <AudioManager autoPlay={true} showControls={true} />
             )}
           </>
         )}
       </ThemeProvider>
     </AuthProvider>
-  )
+  );
 }

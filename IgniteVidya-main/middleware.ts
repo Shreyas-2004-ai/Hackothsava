@@ -20,9 +20,25 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // If user is logged in and trying to access login page, redirect to home
+  // If user is logged in and trying to access login page, redirect to subscription
   if (session && req.nextUrl.pathname === '/login') {
-    return NextResponse.redirect(new URL('/', req.url))
+    return NextResponse.redirect(new URL('/subscription', req.url))
+  }
+
+  // Check subscription status for protected routes
+  if (session && isProtectedRoute && !req.nextUrl.pathname.startsWith('/subscription')) {
+    const { data: subscription } = await supabase
+      .from('user_subscriptions')
+      .select('status, current_period_end')
+      .eq('user_id', session.user.id)
+      .single()
+
+    // If no subscription or expired, redirect to subscription page
+    if (!subscription || 
+        !['trial', 'active'].includes(subscription.status) ||
+        new Date(subscription.current_period_end) < new Date()) {
+      return NextResponse.redirect(new URL('/subscription', req.url))
+    }
   }
 
   return res
