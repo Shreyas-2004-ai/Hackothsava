@@ -12,11 +12,11 @@ const pressStart2P = Press_Start_2P({
 })
 
 export const metadata: Metadata = {
-  title: "Apna Parivar - STEM Learning Platform",
+  title: "Apna Parivar - Family Tree Management Platform",
   description: "Family connections for all. Interactive family tree management with secure authentication, multi-generational mapping, and personalized relationship tracking.",
-  generator: 'IgniteVidya',
-  keywords: ['STEM', 'Education', 'Learning', 'Science', 'Technology', 'Engineering', 'Mathematics', 'Students', 'Grades 6-12'],
-  authors: [{ name: 'IgniteVidya Team' }],
+  generator: 'ApnaParivar',
+  keywords: ['Family Tree', 'Family Management', 'Genealogy', 'Family Connections', 'Family Heritage', 'Family History', 'Apna Parivar'],
+  authors: [{ name: 'ApnaParivar Team' }],
   openGraph: {
     title: 'Apna Parivar',
     description: 'Family connections for all. Interactive family tree management with secure authentication, multi-generational mapping, and personalized relationship tracking.',

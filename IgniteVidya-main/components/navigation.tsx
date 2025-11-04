@@ -25,6 +25,8 @@ import {
   LayoutDashboard,
   Users,
   MessageCircle,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
@@ -49,6 +51,8 @@ const navItems = [
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const { user, signOut } = useAuth();
@@ -56,8 +60,15 @@ export default function Navigation() {
     useSoundEffects();
 
   const handleSignOut = async () => {
+    setShowSignOutModal(true);
+  };
+
+  const confirmSignOut = async () => {
+    setIsSigningOut(true);
     playClickSound("secondary");
     await signOut();
+    setIsSigningOut(false);
+    setShowSignOutModal(false);
   };
 
   return (
@@ -105,15 +116,20 @@ export default function Navigation() {
               {/* Desktop Actions */}
               <div className="hidden md:flex items-center space-x-2">
                 {user ? (
-                  <Button
-                    variant="ghost"
-                    onClick={handleSignOut}
-                    onMouseEnter={() => playHoverSound("button")}
-                    className="rounded-xl px-4"
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <LogOut className="h-5 w-5 mr-2 text-red-600 dark:text-red-400" />
-                    <span className="text-sm font-semibold">Sign Out</span>
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={handleSignOut}
+                      onMouseEnter={() => playHoverSound("button")}
+                      className="rounded-xl px-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-all"
+                    >
+                      <LogOut className="h-5 w-5 mr-2" />
+                      <span className="text-sm font-semibold">Sign Out</span>
+                    </Button>
+                  </motion.div>
                 ) : (
                   <Link href="/login">
                     <Button
@@ -179,17 +195,22 @@ export default function Navigation() {
               {/* Mobile Actions */}
               <div className="md:hidden flex items-center space-x-2">
                 {user ? (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleSignOut}
-                    onMouseEnter={() => playHoverSound("button")}
-                    className="rounded-xl"
-                    title="Sign Out"
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <LogOut className="h-5 w-5 text-red-600 dark:text-red-400" />
-                    <span className="sr-only">Sign Out</span>
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleSignOut}
+                      onMouseEnter={() => playHoverSound("button")}
+                      className="rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30"
+                      title="Sign Out"
+                    >
+                      <LogOut className="h-5 w-5 text-red-600 dark:text-red-400" />
+                      <span className="sr-only">Sign Out</span>
+                    </Button>
+                  </motion.div>
                 ) : (
                   <Link href="/login">
                     <Button
@@ -339,6 +360,73 @@ export default function Navigation() {
                   </div>
                 </div>
               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Sign Out Confirmation Modal */}
+      <AnimatePresence>
+        {showSignOutModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSignOutModal(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-zinc-900 rounded-2xl p-6 max-w-md w-full border border-zinc-200 dark:border-zinc-800 shadow-2xl"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                    <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-black dark:text-white">
+                      Sign Out?
+                    </h3>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      Are you sure you want to sign out?
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowSignOutModal(false)}
+                    className="flex-1"
+                    disabled={isSigningOut}
+                  >
+                    Cancel
+                  </Button>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      onClick={confirmSignOut}
+                      disabled={isSigningOut}
+                      className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
+                    >
+                      {isSigningOut ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Signing Out...
+                        </>
+                      ) : (
+                        <>
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Sign Out
+                        </>
+                      )}
+                    </Button>
+                  </motion.div>
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}

@@ -26,7 +26,7 @@ export default function ApnaParivCompanion({ isTerminalOpen, onOpen }: ApnaPariv
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm your Apna Parivar Companion 🌟 I'm here to motivate you in your STEM learning journey, help you excel in your studies, and support you through grades 6-12 subjects! Let's achieve academic greatness together! 💪 What can I help you with today?",
+      text: "Hello! I'm your Apna Parivar Companion 🌟 I'm here to help you manage your family tree, connect with family members, and preserve your family heritage! Let's build your family connections together! 💪 What can I help you with today?",
       isUser: false,
       timestamp: new Date(),
     },
@@ -242,7 +242,7 @@ export default function ApnaParivCompanion({ isTerminalOpen, onOpen }: ApnaPariv
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask about STEM learning..."
+                    placeholder="Ask about family tree..."
                     className="flex-1 rounded-lg border-zinc-200 dark:border-zinc-800 text-xs md:text-sm"
                     disabled={isLoading}
                   />

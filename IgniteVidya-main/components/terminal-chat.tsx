@@ -97,10 +97,10 @@ export default function TerminalChat({
     }
 
     if (cmd === "about") {
-      return `Apna Parivar - Your Academic Companion
+      return `Apna Parivar - Family Tree Management Platform
 Version: 1.0.0
-Built for: STEM Students (Grades 6-12)
-Features: Notes, Lectures, Games, AI Tutor, Quiz, Dashboard
+Built for: Families and Family Members
+Features: Family Tree, Add Members, Manage Admins, Family Chat, AI Assistant
 Developer: Apna Parivar Team
 Mission: Family connections for all`;
     }

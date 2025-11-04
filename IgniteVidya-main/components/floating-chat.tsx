@@ -26,7 +26,7 @@ export default function FloatingChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm your Apna Parivar assistant. How can I help you with STEM learning today?",
+      text: "Hello! I'm your Apna Parivar assistant. How can I help you with your family tree today?",
       isUser: false,
       timestamp: new Date(),
     },
@@ -71,7 +71,7 @@ export default function FloatingChat() {
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response || "I'm here to help with STEM learning and Apna Parivar features!",
+        text: data.response || "I'm here to help with family tree management and Apna Parivar features!",
         isUser: false,
         timestamp: new Date(),
       }
@@ -208,7 +208,7 @@ export default function FloatingChat() {
                   }
                 }}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask about STEM learning..."
+                placeholder="Ask about family tree..."
                 className="flex-1"
                 disabled={isLoading}
               />

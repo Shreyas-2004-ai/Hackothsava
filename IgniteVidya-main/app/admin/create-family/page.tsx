@@ -23,63 +23,54 @@ export default function CreateFamilyPage() {
     setIsLoading(true);
 
     try {
+      // Get authenticated user
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Create family
-      const subscriptionEndDate =
-        formData.subscriptionType === "free_trial"
-          ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
-          : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+      // Call MongoDB API to create family
+      const response = await fetch("/api/create-family", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          familyName: formData.familyName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: user.email,
+          userId: user.id,
+          subscriptionType: formData.subscriptionType,
+        }),
+      });
 
-      const { data: familyData, error: familyError } = await supabase
-        .from("families")
-        .insert({
-          family_name: formData.familyName,
-          created_by: user.id,
-          subscription_type: formData.subscriptionType,
-          subscription_end_date: subscriptionEndDate,
-        })
-        .select()
-        .single();
+      const result = await response.json();
 
-      if (familyError) throw familyError;
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to create family");
+      }
 
-      // Create primary admin member
-      const { data: memberData, error: memberError } = await supabase
-        .from("family_members")
-        .insert({
-          family_id: familyData.id,
-          user_id: user.id,
-          email: user.email!,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          is_admin: true,
-          is_primary_admin: true,
-          invitation_accepted: true,
-        })
-        .select()
-        .single();
+      console.log("✅ Family created in MongoDB:", result.data);
 
-      if (memberError) throw memberError;
-
-      console.log("Family created:", familyData);
-      console.log("Admin member created:", memberData);
-
-      alert("Family created successfully!");
+      alert(
+        `Family "${formData.familyName}" created successfully in MongoDB!\n\nCheck MongoDB Compass to see your data!`
+      );
 
       // If paid subscription, redirect to payment
       if (formData.subscriptionType === "paid") {
-        router.push(`/admin/payment?family_id=${familyData.id}`);
+        router.push(`/admin/payment?family_id=${result.data.familyId}`);
       } else {
         // Redirect to admin dashboard
         router.push("/admin/dashboard");
       }
     } catch (error) {
       console.error("Error creating family:", error);
-      alert("Failed to create family. Please try again.");
+      alert(
+        `Failed to create family: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     } finally {
       setIsLoading(false);
     }

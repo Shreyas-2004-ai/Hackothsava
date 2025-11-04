@@ -59,14 +59,14 @@ export default function HomePage() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Inspirational quotes for STEM learning
+  // Inspirational quotes for family connections
   const quotes = [
     "Family connections for all - Apna Parivar",
-    "Science is the poetry of reality - Richard Dawkins",
-    "The future belongs to those who learn more skills - Alvin Toffler",
-    "Education is the most powerful weapon to change the world - Nelson Mandela",
-    "STEM education creates critical thinkers - Unknown",
-    "Innovation distinguishes between a leader and a follower - Steve Jobs",
+    "Family is not an important thing, it's everything - Michael J. Fox",
+    "The family is one of nature's masterpieces - George Santayana",
+    "A family is a gift that lasts forever - Unknown",
+    "Family means no one gets left behind or forgotten - Unknown",
+    "The love of family and the admiration of friends is much more important than wealth - Walter Cronkite",
   ];
 
   useEffect(() => {
@@ -165,7 +165,7 @@ export default function HomePage() {
       description: "Add and connect family members",
       icon: Rocket,
       color: "blue",
-      href: "/level/add-family-members",
+      href: "/admin/add-member",
       hasGames: true,
     },
     {
@@ -198,7 +198,7 @@ export default function HomePage() {
       grade: "6th",
       subjects: 6,
       theme: "Explorer",
-      description: "Begin your STEM adventure",
+      description: "Connect with your family",
       icon: Rocket,
       color: "blue",
     },
@@ -246,7 +246,7 @@ export default function HomePage() {
       grade: "12th",
       subjects: 12,
       theme: "Leader",
-      description: "Lead the STEM revolution",
+      description: "Manage your family tree",
       icon: Crown,
       color: "violet",
     },
