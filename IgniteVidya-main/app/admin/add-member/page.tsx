@@ -8,50 +8,28 @@ import {
   Users,
   CheckCircle2,
   Sparkles,
-  Phone,
-  Home,
-  Camera,
-  Upload,
-  Calendar,
-  MapPin,
-  Briefcase,
-  GraduationCap,
-  Building,
-  Heart,
-  Trophy,
-  FileText,
-  Info,
-  X,
   Save,
   ArrowLeft,
-  Rocket,
+  Phone,
+  Camera,
+  Upload,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { useFamilyContext } from "@/contexts/FamilyContext";
 
 export default function AddMemberPage() {
   const router = useRouter();
+  const { refreshMembers } = useFamilyContext();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     relation: "",
     phone: "",
     photo: null as File | null,
-    customFields: {
-      birthDate: "",
-      birthPlace: "",
-      occupation: "",
-      education: "",
-      address: "",
-      hobbies: "",
-      achievements: "",
-      notes: "",
-      additionalInfo: "",
-      emergencyContact: "",
-    },
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -83,22 +61,56 @@ export default function AddMemberPage() {
     "Other",
   ];
 
+  // Email validation
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Phone validation
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
+    return phone.trim() === '' || phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload an image file");
+      // Validate file type - only allow specific image MIME types
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Please upload a valid image file (JPG, PNG, GIF, or WEBP)");
         return;
       }
-      if (file.size > 5 * 1024 * 1024) {
+      
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
         toast.error("Image size should be less than 5MB");
         return;
       }
+      
+      // Validate file extension as additional security
+      const fileName = file.name.toLowerCase();
+      const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+      const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+      
+      if (!hasValidExtension) {
+        toast.error("Invalid file extension. Please upload JPG, PNG, GIF, or WEBP files only.");
+        return;
+      }
+      
       setFormData({ ...formData, photo: file });
       
+      // Create preview securely
       const reader = new FileReader();
       reader.onload = (e) => {
-        setPhotoPreview(e.target?.result as string);
+        if (e.target?.result) {
+          setPhotoPreview(e.target.result as string);
+        }
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read image file. Please try again.");
       };
       reader.readAsDataURL(file);
     }
@@ -109,29 +121,46 @@ export default function AddMemberPage() {
     setPhotoPreview(null);
   };
 
-  const handleCustomFieldChange = (field: string, value: string) => {
-    setFormData({
-      ...formData,
-      customFields: {
-        ...formData.customFields,
-        [field]: value,
-      },
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!formData.name.trim()) {
+      toast.error("Please enter a name");
+      return;
+    }
+    
+    if (!formData.relation) {
+      toast.error("Please select a relation");
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      toast.error("Please enter an email address");
+      return;
+    }
+    
+    if (!validateEmail(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (formData.phone && !validatePhone(formData.phone)) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const submitData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
-        email: formData.email,
+        name: formData.name.trim(),
+        firstName: formData.name.split(' ')[0] || formData.name,
+        lastName: formData.name.split(' ').slice(1).join(' ') || '',
+        email: formData.email.trim().toLowerCase(),
         relation: formData.relation,
-        phone: formData.phone || formData.customFields.emergencyContact || "",
-        customFields: formData.customFields,
+        phone: formData.phone.trim() || "",
+        customFields: {},
         addedAt: new Date().toISOString(),
       };
 
@@ -156,37 +185,64 @@ export default function AddMemberPage() {
     try {
       const res = await fetch("/api/add-member", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-user-name": "Family Member",
+        },
         body: JSON.stringify(data),
       });
 
       const result = await res.json();
 
-      if (res.ok) {
+      if (res.ok && result.success) {
         setSuccess(true);
-        toast.success(`${formData.firstName} ${formData.lastName} has been added successfully!`);
+        
+        // Show success message with email status
+        if (result.emailSent) {
+          toast.success(
+            `${formData.name} has been added to the database! ✅ An invitation email has been sent to ${formData.email}.`,
+            { duration: 6000 }
+          );
+        } else {
+          toast.success(
+            `${formData.name} has been added to the database! ✅ Note: Email service may need configuration.`,
+            { duration: 6000 }
+          );
+        }
+        
+        // Clear form
         setFormData({
-          firstName: "",
-          lastName: "",
+          name: "",
           email: "",
           relation: "",
           phone: "",
           photo: null,
-          customFields: {
-            birthDate: "",
-            birthPlace: "",
-            occupation: "",
-            education: "",
-            address: "",
-            hobbies: "",
-            achievements: "",
-            notes: "",
-            additionalInfo: "",
-            emergencyContact: "",
-          },
         });
         setPhotoPreview(null);
-        setTimeout(() => setSuccess(false), 3000);
+        
+        // Refresh the family members list immediately
+        refreshMembers();
+        
+        // Dispatch a custom event to notify other components
+        window.dispatchEvent(new CustomEvent('familyMemberAdded', {
+          detail: { 
+            member: {
+              id: result.memberId,
+              name: formData.name,
+              email: formData.email,
+              relation: formData.relation,
+              phone: formData.phone,
+              addedAt: new Date().toISOString()
+            }
+          }
+        }));
+        
+        // Redirect to family tree after successful addition
+        setTimeout(() => {
+          setSuccess(false);
+          // Redirect to family tree with refresh parameter
+          router.push('/family-tree?refresh=true');
+        }, 2000);
       } else {
         toast.error(result.message || "Failed to add member");
       }
@@ -290,310 +346,153 @@ export default function AddMemberPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="relative p-6 sm:p-8 lg:p-10">
-              {/* Basic Information Section */}
-              <div className="mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* First Name */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Users className="w-4 h-4 text-blue-500" />
-                      First Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.firstName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, firstName: e.target.value })
-                      }
-                      placeholder="e.g., Krishnappa"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
-                      required
-                    />
-                  </div>
+              {/* Form Fields */}
+              <div className="space-y-6">
+                {/* Name */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <Users className="w-4 h-4 text-blue-500" />
+                    Name of Member *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    placeholder="e.g., Krishnappa"
+                    className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
+                    required
+                  />
+                </div>
 
-                  {/* Last Name */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Users className="w-4 h-4 text-blue-500" />
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.lastName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, lastName: e.target.value })
-                      }
-                      placeholder="e.g., Kumar"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
-                    />
-                  </div>
+                {/* Relation */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <Users className="w-4 h-4 text-green-500" />
+                    Relation to Me *
+                  </label>
+                  <select
+                    value={formData.relation}
+                    onChange={(e) =>
+                      setFormData({ ...formData, relation: e.target.value })
+                    }
+                    className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-green-500 dark:focus:border-green-400 outline-none transition-all"
+                    required
+                  >
+                    <option value="">Select relation</option>
+                    {relations.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                  {/* Email */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Mail className="w-4 h-4 text-purple-500" />
-                      Member's Gmail *
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      placeholder="e.g., krishnappa@gmail.com"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-purple-500 dark:focus:border-purple-400 outline-none transition-all"
-                      required
-                    />
-                  </div>
+                {/* Member's Gmail */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <Mail className="w-4 h-4 text-purple-500" />
+                    Their Mail *
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    placeholder="e.g., krishnappa@gmail.com"
+                    className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-purple-500 dark:focus:border-purple-400 outline-none transition-all"
+                    required
+                  />
+                </div>
 
-                  {/* Relation */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Users className="w-4 h-4 text-green-500" />
-                      Relation *
-                    </label>
-                    <select
-                      value={formData.relation}
-                      onChange={(e) =>
-                        setFormData({ ...formData, relation: e.target.value })
-                      }
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-green-500 dark:focus:border-green-400 outline-none transition-all"
-                      required
-                    >
-                      <option value="">Select relation</option>
-                      {relations.map((r) => (
-                        <option key={r} value={r}>
-                          {r}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                {/* Phone Number */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    <Phone className="w-4 h-4 text-blue-500" />
+                    Their Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    placeholder="e.g., +91 9876543210"
+                    className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
+                  />
+                </div>
 
-                  {/* Photo Upload */}
-                  <div className="md:col-span-2">
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Camera className="w-4 h-4 text-orange-500" />
-                      Photo
-                    </label>
-                    <div className="flex items-center gap-4">
+                {/* Photo Upload - Large Section */}
+                <div className="pt-4">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                    <Camera className="w-5 h-5 text-orange-500" />
+                    Upload Photo
+                  </label>
+                  
+                  {photoPreview ? (
+                    <div className="relative w-full">
+                      <div className="relative border-4 border-dashed border-orange-300 dark:border-orange-700 rounded-2xl p-8 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800">
+                            <img
+                              src={photoPreview}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={removePhoto}
+                              className="absolute top-2 right-2 w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all transform hover:scale-110"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400 font-medium">
+                            Click to change photo
+                          </p>
+                        </div>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative">
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handlePhotoUpload}
                         className="hidden"
-                        id="photo-upload"
+                        id="photo-upload-large"
                       />
                       <label
-                        htmlFor="photo-upload"
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl cursor-pointer transition-all shadow-lg hover:shadow-xl"
+                        htmlFor="photo-upload-large"
+                        className="flex flex-col items-center justify-center w-full h-64 sm:h-80 border-4 border-dashed border-orange-300 dark:border-orange-700 rounded-2xl p-8 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 cursor-pointer hover:border-orange-400 dark:hover:border-orange-600 transition-all group"
                       >
-                        <Upload className="w-5 h-5" />
-                        <span>Upload Photo</span>
-                      </label>
-                      {photoPreview && (
-                        <div className="relative group">
-                          <img
-                            src={photoPreview}
-                            alt="Preview"
-                            className="w-20 h-20 rounded-xl object-cover border-2 border-gray-200 dark:border-gray-700 shadow-md"
-                          />
-                          <button
-                            type="button"
-                            onClick={removePhoto}
-                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
+                        <div className="flex flex-col items-center justify-center space-y-4">
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Upload className="w-10 h-10 text-white" />
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-semibold text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                              Click to upload photo
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                              or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                              PNG, JPG, GIF or WEBP (MAX. 5MB)
+                            </p>
+                          </div>
                         </div>
-                      )}
+                      </label>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      Maximum file size: 5MB. Supported formats: JPG, PNG, GIF
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional Information Section */}
-              <div className="mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-                    <Info className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Additional Information
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Birth Date */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Calendar className="w-4 h-4 text-red-500" />
-                      Birth Date
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.customFields.birthDate}
-                      onChange={(e) =>
-                        handleCustomFieldChange("birthDate", e.target.value)
-                      }
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-red-500 dark:focus:border-red-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Birth Place */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <MapPin className="w-4 h-4 text-pink-500" />
-                      Birth Place
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.customFields.birthPlace}
-                      onChange={(e) =>
-                        handleCustomFieldChange("birthPlace", e.target.value)
-                      }
-                      placeholder="Enter birth place"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-pink-500 dark:focus:border-pink-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Occupation */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Briefcase className="w-4 h-4 text-amber-500" />
-                      Occupation
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.customFields.occupation}
-                      onChange={(e) =>
-                        handleCustomFieldChange("occupation", e.target.value)
-                      }
-                      placeholder="Enter occupation"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-amber-500 dark:focus:border-amber-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Education */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <GraduationCap className="w-4 h-4 text-teal-500" />
-                      Education
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.customFields.education}
-                      onChange={(e) =>
-                        handleCustomFieldChange("education", e.target.value)
-                      }
-                      placeholder="Enter education"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Phone Number */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Phone className="w-4 h-4 text-blue-500" />
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone || formData.customFields.emergencyContact}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
-                      placeholder="Enter phone number"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Address */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Building className="w-4 h-4 text-indigo-500" />
-                      Address
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.customFields.address}
-                      onChange={(e) =>
-                        handleCustomFieldChange("address", e.target.value)
-                      }
-                      placeholder="Enter address"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-indigo-500 dark:focus:border-indigo-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Hobbies */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Heart className="w-4 h-4 text-rose-500" />
-                      Hobbies
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.customFields.hobbies}
-                      onChange={(e) =>
-                        handleCustomFieldChange("hobbies", e.target.value)
-                      }
-                      placeholder="Enter hobbies"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-rose-500 dark:focus:border-rose-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Achievements */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Trophy className="w-4 h-4 text-yellow-500" />
-                      Achievements
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.customFields.achievements}
-                      onChange={(e) =>
-                        handleCustomFieldChange("achievements", e.target.value)
-                      }
-                      placeholder="Enter achievements"
-                      className="w-full h-12 px-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-yellow-500 dark:focus:border-yellow-400 outline-none transition-all"
-                    />
-                  </div>
-
-                  {/* Notes */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <FileText className="w-4 h-4 text-gray-500" />
-                      Notes
-                    </label>
-                    <textarea
-                      value={formData.customFields.notes}
-                      onChange={(e) =>
-                        handleCustomFieldChange("notes", e.target.value)
-                      }
-                      placeholder="Enter any additional notes"
-                      rows={3}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-gray-500 dark:focus:border-gray-400 outline-none transition-all resize-none"
-                    />
-                  </div>
-
-                  {/* Additional Info */}
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      <Info className="w-4 h-4 text-cyan-500" />
-                      Additional Info
-                    </label>
-                    <textarea
-                      value={formData.customFields.additionalInfo}
-                      onChange={(e) =>
-                        handleCustomFieldChange("additionalInfo", e.target.value)
-                      }
-                      placeholder="Enter any additional information"
-                      rows={3}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-cyan-500 dark:focus:border-cyan-400 outline-none transition-all resize-none"
-                    />
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -639,7 +538,7 @@ export default function AddMemberPage() {
                   ) : (
                     <>
                       <Save className="w-6 h-6" />
-                      Add Family Member
+                      Save
                     </>
                   )}
                 </motion.button>
@@ -651,7 +550,7 @@ export default function AddMemberPage() {
                   onClick={() => router.push("/family-tree")}
                   className="sm:w-auto px-8 h-14 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold rounded-xl flex items-center justify-center gap-3 text-lg transition-all"
                 >
-                  <Home className="w-5 h-5" />
+                  <ArrowLeft className="w-5 h-5" />
                   View Family Tree
                 </motion.button>
               </div>

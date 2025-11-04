@@ -10,23 +10,31 @@ export async function GET(request: NextRequest) {
     const members = await db.collection('family_members').find({}).toArray();
 
     // Transform MongoDB documents to match our interface
-    const familyMembers = members.map((member: any) => ({
-      id: member._id.toString(),
-      name: member.name || `${member.firstName || ''} ${member.lastName || ''}`.trim() || 'Unknown',
-      firstName: member.firstName || '',
-      lastName: member.lastName || '',
-      relation: member.relation || 'Family Member',
-      email: member.email || '',
-      phone: member.phone || '',
-      photo: member.photo_url || member.photo || null,
-      photo_url: member.photo_url || member.photo || null,
-      generation: member.generation || 0, // Default to 0 if not set
-      parentId: member.parentId || null,
-      spouseId: member.spouseId || null,
-      children: member.children || [],
-      customFields: member.customFields || {},
-      createdAt: member.created_at || member.added_at || new Date(),
-    }));
+    // Handle both field name formats (first_name/last_name vs firstName/lastName)
+    const familyMembers = members.map((member: any) => {
+      // Handle different field name formats
+      const firstName = member.firstName || member.first_name || '';
+      const lastName = member.lastName || member.last_name || '';
+      const fullName = member.name || `${firstName} ${lastName}`.trim() || 'Unknown';
+      
+      return {
+        id: member._id.toString(),
+        name: fullName,
+        firstName: firstName,
+        lastName: lastName,
+        relation: member.relation || 'Family Member',
+        email: member.email || '',
+        phone: member.phone || '',
+        photo: member.photo_url || member.photo || null,
+        photo_url: member.photo_url || member.photo || null,
+        generation: member.generation !== undefined ? member.generation : 1, // Default to 1 if not set
+        parentId: member.parentId ? member.parentId.toString() : null,
+        spouseId: member.spouseId ? member.spouseId.toString() : null,
+        children: member.children ? member.children.map((c: any) => c.toString()) : [],
+        customFields: member.customFields || {},
+        createdAt: member.created_at || member.added_at || member.createdAt || new Date(),
+      };
+    });
 
     console.log(`✅ Fetched ${familyMembers.length} family members from MongoDB`);
 

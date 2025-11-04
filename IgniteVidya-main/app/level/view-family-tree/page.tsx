@@ -68,35 +68,109 @@ export default function ViewFamilyTreePage() {
 
   // Fetch family members from MongoDB
   useEffect(() => {
-    fetchFamilyMembers();
+    // Check if we should refresh immediately (e.g., after adding a member)
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get('refresh') === 'true';
+    
+    if (shouldRefresh) {
+      // Immediate refresh if coming from add member page
+      fetchFamilyMembers();
+      // Clean up URL parameter
+      window.history.replaceState({}, '', '/level/view-family-tree');
+    } else {
+      fetchFamilyMembers();
+    }
+    
+    // Auto-refresh every 3 seconds to show new members (reduced from 5 for better responsiveness)
+    // Use silent refresh (no loading indicator) for background updates
+    const interval = setInterval(() => {
+      fetchFamilyMembers(false); // Silent refresh - no loading spinner
+    }, 3000);
+    
+    // Also refresh when page becomes visible (user switches tabs)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchFamilyMembers();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
-  const fetchFamilyMembers = async () => {
+  const fetchFamilyMembers = async (showLoading = true) => {
     try {
-      setIsLoading(true);
+      if (showLoading) {
+        setIsLoading(true);
+      }
       
-      // Fetch from MongoDB via API
-      const response = await fetch('/api/family-members');
+      // Fetch from MongoDB via API with cache-busting timestamp
+      const response = await fetch(`/api/family-members?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
       const result = await response.json();
       
-      if (result.success && result.data) {
-        // Process the data: calculate generations and relationships
-        const processedData = processFamilyData(result.data);
-        
-        // Organize by generation and calculate positions
+      if (result.success && Array.isArray(result.data)) {
+        const memberCount = result.data.length;
+        console.log(`✅ Loaded ${memberCount} family members from database`);
+
+        const source = memberCount > 0 ? result.data : getStaticDemoFamily();
+        const processedData = processFamilyData(source);
         const organized = organizeByGeneration(processedData);
         setFamilyMembers(organized);
+
+        if (memberCount > familyMembers.length && familyMembers.length > 0 && !showLoading) {
+          console.log(`🆕 New member detected! Total members: ${memberCount}`);
+        }
       } else {
-        console.error("Failed to fetch family members:", result.message);
-        // If no data, show empty tree
-        setFamilyMembers([]);
+        const demoProcessed = processFamilyData(getStaticDemoFamily());
+        const demoOrganized = organizeByGeneration(demoProcessed);
+        setFamilyMembers(demoOrganized);
       }
     } catch (error) {
       console.error("Error fetching family members:", error);
-      setFamilyMembers([]);
+      const demoProcessed = processFamilyData(getStaticDemoFamily());
+      const demoOrganized = organizeByGeneration(demoProcessed);
+      setFamilyMembers(demoOrganized);
     } finally {
-      setIsLoading(false);
+      if (showLoading) {
+        setIsLoading(false);
+      }
     }
+  };
+
+  // Static demo family for empty-state
+  const getStaticDemoFamily = (): FamilyMember[] => {
+    const mk = (id: string, name: string, relation: string, gen: number, extra?: Partial<FamilyMember>): FamilyMember => ({
+      id, name, relation, generation: gen, email: `${name.replace(/\s+/g,'').toLowerCase()}@demo.com`, phone: '',
+      parentId: undefined, spouseId: undefined, children: [], customFields: {}, ...extra,
+    });
+
+    // Gen 0
+    const g0a = mk('g0a','Arun Rao','Grandfather',0);
+    const g0b = mk('g0b','Meera Rao','Grandmother',0,{ spouseId:'g0a' });
+
+    // Gen 1
+    const g1a = mk('g1a','Ramesh Rao','Father',1,{ parentId:'g0a', spouseId:'g1b' });
+    const g1b = mk('g1b','Priya Rao','Mother',1,{ parentId:'g0a', spouseId:'g1a' });
+    const g1c = mk('g1c','Kiran Rao','Uncle',1,{ parentId:'g0a' });
+
+    // Gen 2
+    const g2a = mk('g2a','Aarav Rao','Son',2,{ parentId:'g1a' });
+    const g2b = mk('g2b','Anaya Rao','Daughter',2,{ parentId:'g1a' });
+
+    g0a.children = ['g1a','g1b','g1c'];
+    g1a.children = ['g2a','g2b'];
+    g1b.children = ['g2a','g2b'];
+
+    return [g0a,g0b,g1a,g1b,g1c,g2a,g2b];
   };
 
   // Process family data to calculate generations and relationships
@@ -227,6 +301,8 @@ export default function ViewFamilyTreePage() {
   const handleReset = () => {
     setZoomLevel(1);
     setPanOffset({ x: 0, y: 0 });
+    // Also refresh data from database
+    fetchFamilyMembers();
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -448,6 +524,7 @@ export default function ViewFamilyTreePage() {
                 size="sm"
                 onClick={handleReset}
                 className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+                title="Reset view and refresh data"
               >
                 <RotateCcw className="h-4 w-4" />
               </Button>

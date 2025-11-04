@@ -45,6 +45,7 @@ import {
   MapPin,
   Cake
 } from "lucide-react"
+import { useFamilyContext } from "@/contexts/FamilyContext"
 
 interface FamilyMember {
   id: string
@@ -81,6 +82,7 @@ interface FamilyStats {
 
 export default function FamilyDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
+  const { members: contextMembers, refreshMembers } = useFamilyContext()
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [recentEvents, setRecentEvents] = useState<FamilyEvent[]>([])
   const [familyStats, setFamilyStats] = useState<FamilyStats>({
@@ -94,125 +96,59 @@ export default function FamilyDashboard() {
     youngestMember: ''
   })
 
-  // Sample family data
+  // Load family data from context
   useEffect(() => {
-    const sampleMembers: FamilyMember[] = [
+    refreshMembers()
+  }, [refreshMembers])
+
+  useEffect(() => {
+    // Convert context members to dashboard format with additional properties
+    const dashboardMembers: FamilyMember[] = contextMembers.map((member, index) => ({
+      ...member,
+      age: 25 + (index * 5), // Default ages, can be updated from database
+      location: "India", // Default location
+      lastActive: "Recently", // Default activity
+      profilePicture: "👤", // Default avatar
+      isOnline: Math.random() > 0.5, // Random online status
+      joinedDate: member.addedAt
+    }))
+
+    // Sample events - these could also come from a database
+    const sampleEvents: FamilyEvent[] = [
       {
         id: "1",
-        name: "Krishnappa",
-        relation: "Father",
-        age: 65,
-        location: "Bangalore, India",
-        lastActive: "2 hours ago",
-        profilePicture: "👨‍🦳",
-        isOnline: true,
-        joinedDate: "2024-01-15"
-      },
-      {
-        id: "2",
-        name: "Lakshmi",
-        relation: "Mother",
-        age: 60,
-        location: "Bangalore, India",
-        lastActive: "1 day ago",
-        profilePicture: "👩‍🦳",
-        isOnline: false,
-        joinedDate: "2024-01-16"
-      },
-      {
-        id: "3",
-        name: "Rajesh",
-        relation: "Son",
-        age: 35,
-        location: "Mumbai, India",
-        lastActive: "30 minutes ago",
-        profilePicture: "👨‍💼",
-        isOnline: true,
-        joinedDate: "2024-01-20"
-      },
-      {
-        id: "4",
-        name: "Priya",
-        relation: "Daughter",
-        age: 32,
-        location: "Delhi, India",
-        lastActive: "5 hours ago",
-        profilePicture: "👩‍💻",
-        isOnline: false,
-        joinedDate: "2024-01-25"
-      },
-      {
-        id: "5",
-        name: "Arjun",
-        relation: "Grandson",
-        age: 8,
-        location: "Mumbai, India",
-        lastActive: "1 hour ago",
-        profilePicture: "👦",
-        isOnline: true,
-        joinedDate: "2024-02-01"
-      }
-    ]   
- const sampleEvents: FamilyEvent[] = [
-      {
-        id: "1",
-        title: "Rajesh & Priya's Wedding Anniversary",
-        type: "anniversary",
-        date: "2024-03-15",
-        attendees: 25,
-        location: "Family Home, Bangalore",
-        description: "Celebrating 25 years of love and togetherness"
-      },
-      {
-        id: "2",
-        title: "Little Arjun's Birthday",
-        type: "birthday",
-        date: "2024-03-20",
-        attendees: 15,
-        location: "Mumbai",
-        description: "Our youngest family member turns 9!"
-      },
-      {
-        id: "3",
-        title: "Grandma's 80th Birthday",
-        type: "birthday",
-        date: "2024-04-05",
-        attendees: 40,
-        location: "Bangalore",
-        description: "Milestone celebration for our beloved matriarch"
-      },
-      {
-        id: "4",
-        title: "Family Reunion",
+        title: "Family Gathering",
         type: "celebration",
-        date: "2024-04-15",
-        attendees: 60,
-        location: "Mysore",
-        description: "Annual family gathering with all relatives"
+        date: "2024-12-25",
+        attendees: contextMembers.length,
+        location: "Family Home",
+        description: "Annual family celebration"
       }
     ]
 
-    setFamilyMembers(sampleMembers)
+    setFamilyMembers(dashboardMembers)
     setRecentEvents(sampleEvents)
     
     // Calculate family statistics
-    const activeCount = sampleMembers.filter(m => m.isOnline).length
-    const ages = sampleMembers.map(m => m.age)
-    const avgAge = ages.reduce((sum, age) => sum + age, 0) / ages.length
-    const oldest = sampleMembers.reduce((prev, current) => (prev.age > current.age) ? prev : current)
-    const youngest = sampleMembers.reduce((prev, current) => (prev.age < current.age) ? prev : current)
+    if (dashboardMembers.length > 0) {
+      const activeCount = dashboardMembers.filter(m => m.isOnline).length
+      const ages = dashboardMembers.map(m => m.age)
+      const avgAge = ages.length > 0 ? ages.reduce((sum, age) => sum + age, 0) / ages.length : 0
+      const oldest = dashboardMembers.reduce((prev, current) => (prev.age > current.age) ? prev : current)
+      const youngest = dashboardMembers.reduce((prev, current) => (prev.age < current.age) ? prev : current)
 
-    setFamilyStats({
-      totalMembers: sampleMembers.length,
-      activeMembers: activeCount,
-      newMembersThisMonth: 2,
-      upcomingEvents: sampleEvents.length,
-      familyTreeDepth: 3,
-      averageAge: Math.round(avgAge),
-      oldestMember: oldest.name,
-      youngestMember: youngest.name
-    })
-  }, [])
+      setFamilyStats({
+        totalMembers: dashboardMembers.length,
+        activeMembers: activeCount,
+        newMembersThisMonth: Math.min(dashboardMembers.length, 2),
+        upcomingEvents: sampleEvents.length,
+        familyTreeDepth: 3,
+        averageAge: Math.round(avgAge),
+        oldestMember: oldest.name,
+        youngestMember: youngest.name
+      })
+    }
+  }, [contextMembers])
 
   const getEventTypeColor = (type: string) => {
     switch (type) {

@@ -11,8 +11,10 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession()
 
   // Protected routes that require authentication (only admin and member dashboards)
+  // Exclude /admin/add-member as it should be publicly accessible
   const protectedRoutes = ['/admin', '/member']
-  const isProtectedRoute = protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route))
+  const isAddMemberRoute = req.nextUrl.pathname === '/admin/add-member'
+  const isProtectedRoute = protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route)) && !isAddMemberRoute
 
   // If user is not logged in and trying to access protected route
   if (!session && isProtectedRoute) {

@@ -25,3 +25,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default clientPromise;
+
+// Helper function for easier database access
+export async function connectToDatabase() {
+  const client = await clientPromise;
+  const db = client.db('apnaparivar');
+  return { client, db };
+}

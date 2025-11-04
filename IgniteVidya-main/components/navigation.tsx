@@ -38,15 +38,12 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/notes", label: "Library", icon: BookOpen },
-  { href: "/lectures", label: "Lectures", icon: Play },
   { href: "/describe-family", label: "Describe Family", icon: Users, badge: "New~AI" },
+  { href: "/family-tree-workflow", label: "Family Tree", icon: Users, badge: "✨ New" },
   { href: "/family-chat", label: "Family Chat", icon: MessageCircle, badge: "New" },
   { href: "/ai-chatbot", label: "AI Chatbot", icon: Brain, badge: "Coming Soon" },
   { href: "/quiz", label: "Quiz", icon: Target },
   { href: "/dashboard", label: "Dashboard", icon: Star },
-  { href: "/projects", label: "Projects", icon: Lightbulb },
-  { href: "/admin/manage-members", label: "Admin Panel", icon: LayoutDashboard, adminOnly: true },
 ];
 
 export default function Navigation() {

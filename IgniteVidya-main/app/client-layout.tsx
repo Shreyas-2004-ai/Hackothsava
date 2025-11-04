@@ -12,6 +12,7 @@ import ApnaParivCompanion from "@/components/afzal-chat";
 import AudioManager from "@/components/audio-manager";
 import FloatingChatWidget from "@/components/floating-chat-widget";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { FamilyProvider } from "@/contexts/FamilyContext";
 import { useState, useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -46,27 +47,29 @@ export default function ClientLayout({
 
   return (
     <AuthProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <Navigation />
-        <main>{children}</main>
-        <TerminalChat
-          isApnaParivCompanionOpen={isApnaParivCompanionOpen}
-          onOpen={handleTerminalOpen}
-        />
-        <ApnaParivCompanion
-          isTerminalOpen={isTerminalOpen}
-          onOpen={handleApnaParivCompanionOpen}
-        />
-        <FloatingChatWidget />
-        <Toaster />
-        <SonnerToaster />
-        <AudioManager autoPlay={true} showControls={true} />
-      </ThemeProvider>
+      <FamilyProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navigation />
+          <main>{children}</main>
+          <TerminalChat
+            isApnaParivCompanionOpen={isApnaParivCompanionOpen}
+            onOpen={handleTerminalOpen}
+          />
+          <ApnaParivCompanion
+            isTerminalOpen={isTerminalOpen}
+            onOpen={handleApnaParivCompanionOpen}
+          />
+          <FloatingChatWidget />
+          <Toaster />
+          <SonnerToaster />
+          <AudioManager autoPlay={true} showControls={true} />
+        </ThemeProvider>
+      </FamilyProvider>
     </AuthProvider>
   );
 }

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useFamilyContext } from "@/contexts/FamilyContext";
 
 interface FamilyMember {
   id: string;
@@ -32,69 +33,25 @@ export default function AddAdminsPage() {
   const [actionType, setActionType] = useState<'promote' | 'demote'>('promote');
   const [targetMember, setTargetMember] = useState<FamilyMember | null>(null);
 
-  // Sample family members data - in a real app, this would come from your database
-  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([
-    {
-      id: "1",
-      name: "Ramesh",
-      relation: "Self",
-      email: "ramesh@gmail.com",
-      phone: "+91 98765 43200",
-      isAdmin: true,
-      isMainAdmin: true,
-      addedDate: "2024-01-01"
-    },
-    {
-      id: "2",
-      name: "Krishnappa",
-      relation: "Father",
-      email: "krishnappa@gmail.com",
-      phone: "+91 98765 43210",
-      isAdmin: false,
-      isMainAdmin: false,
-      addedDate: "2024-01-15"
-    },
-    {
-      id: "3",
-      name: "Ramya",
-      relation: "Sister",
-      email: "ramya@gmail.com",
-      phone: "+91 98765 43211",
-      isAdmin: true,
-      isMainAdmin: false,
-      addedDate: "2024-01-20"
-    },
-    {
-      id: "4",
-      name: "Lakshmi",
-      relation: "Mother",
-      email: "lakshmi@gmail.com",
-      phone: "+91 98765 43212",
-      isAdmin: false,
-      isMainAdmin: false,
-      addedDate: "2024-01-25"
-    },
-    {
-      id: "5",
-      name: "Priya",
-      relation: "Wife",
-      email: "priya@gmail.com",
-      phone: "+91 98765 43213",
-      isAdmin: false,
-      isMainAdmin: false,
-      addedDate: "2024-02-01"
-    },
-    {
-      id: "6",
-      name: "Arjun",
-      relation: "Son",
-      email: "arjun@gmail.com",
-      phone: "+91 98765 43214",
-      isAdmin: false,
-      isMainAdmin: false,
-      addedDate: "2024-02-10"
-    }
-  ]);
+  // Get family members from context and add admin properties
+  const { members: contextMembers, refreshMembers } = useFamilyContext();
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
+
+  // Load family members and add admin properties
+  useEffect(() => {
+    refreshMembers();
+  }, [refreshMembers]);
+
+  useEffect(() => {
+    // Convert context members to admin-enabled members
+    const membersWithAdminProps = contextMembers.map(member => ({
+      ...member,
+      isAdmin: false, // Default to false, can be updated from database
+      isMainAdmin: false, // Default to false, can be updated from database
+      addedDate: member.addedAt
+    }));
+    setFamilyMembers(membersWithAdminProps);
+  }, [contextMembers]);
 
   // Current user (main admin)
   const currentUser = familyMembers.find(member => member.isMainAdmin);
