@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { Send, Shield, AlertCircle } from "lucide-react";
 
 interface Message {
@@ -33,7 +33,6 @@ export default function FamilyChat({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const supabase = createClientComponentClient();
 
   // Load messages
   useEffect(() => {

@@ -55,15 +55,24 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
           'Cache-Control': 'no-cache',
         },
       });
+      
+      if (!response.ok) {
+        console.warn('Failed to fetch members, API might not be available');
+        setMembers([]); // Set empty array instead of error
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success) {
-        setMembers(data.members);
+        setMembers(data.members || []);
       } else {
-        console.error('Failed to load members:', data.message);
+        console.warn('Failed to load members:', data.message);
+        setMembers([]); // Set empty array instead of error
       }
     } catch (error) {
-      console.error('Error loading family members:', error);
+      console.warn('Error loading family members:', error);
+      setMembers([]); // Set empty array instead of error
     } finally {
       setLoading(false);
     }

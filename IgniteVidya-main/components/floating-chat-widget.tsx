@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/lib/supabase';
 import { MessageCircle, X, Minimize2 } from 'lucide-react';
 import FamilyChat from './family-chat';
 
@@ -12,7 +12,6 @@ export default function FloatingChatWidget() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     checkUserFamily();
@@ -20,6 +19,12 @@ export default function FloatingChatWidget() {
 
   const checkUserFamily = async () => {
     try {
+      if (!supabase) {
+        console.warn('Supabase client not available');
+        setIsLoading(false);
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
