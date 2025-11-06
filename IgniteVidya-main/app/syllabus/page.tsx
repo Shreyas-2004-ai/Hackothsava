@@ -230,7 +230,7 @@ export default function SyllabusPage() {
         <footer className="py-3 md:py-6 px-2 md:px-4 border-t border-zinc-200 dark:border-zinc-800 mt-12">
           <div className="max-w-6xl mx-auto text-center">
             <p className="text-xs text-zinc-600 dark:text-zinc-400">
-              © 2024 VTU Vault. Created by <span className="font-semibold text-black dark:text-white">Afzal</span>. All
+              © 2024 IgniteVidya. Created by <span className="font-semibold text-black dark:text-white">Team IgniteVidya</span>. All
               rights reserved.
             </p>
           </div>

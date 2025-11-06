@@ -38,23 +38,7 @@ interface QuestionPaper {
   comments?: Comment[]
 }
 
-interface VTUPaper {
-  id: string
-  subject_code: string
-  subject_name: string
-  semester: number
-  branch: string
-  exam_type: string
-  exam_date: string
-  year: number
-  month: string
-  scheme: string
-  file_url: string
-  file_size: string
-  download_count: number
-  is_official: boolean
-  uploaded_date: string
-}
+
 
 interface Comment {
   id: string
@@ -65,7 +49,6 @@ interface Comment {
 
 export default function QuestionPapersPage() {
   const [papers, setPapers] = useState<QuestionPaper[]>([])
-  const [vtuPapers, setVtuPapers] = useState<VTUPaper[]>([])
   const [filteredPapers, setFilteredPapers] = useState<QuestionPaper[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [semesterFilter, setSemesterFilter] = useState("all")
@@ -74,7 +57,6 @@ export default function QuestionPapersPage() {
   const [monthFilter, setMonthFilter] = useState("all")
   const [showFilters, setShowFilters] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [vtuLoading, setVtuLoading] = useState(false)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [newComment, setNewComment] = useState("")
   const [selectedNoteId, setSelectedNoteId] = useState("")
@@ -152,7 +134,6 @@ export default function QuestionPapersPage() {
   useEffect(() => {
     setPapers(samplePapers)
     setFilteredPapers(samplePapers)
-    fetchVTUPapers()
   }, [])
 
   useEffect(() => {
@@ -181,65 +162,9 @@ export default function QuestionPapersPage() {
     setFilteredPapers(filtered)
   }, [searchQuery, semesterFilter, yearFilter, branchFilter, papers])
 
-  const fetchVTUPapers = async () => {
-    setVtuLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (semesterFilter !== "all") params.append("semester", semesterFilter)
-      if (branchFilter !== "all") params.append("branch", branchFilter)
-      if (yearFilter !== "all") params.append("year", yearFilter)
-      if (monthFilter !== "all") params.append("month", monthFilter)
-      if (searchQuery) params.append("search", searchQuery)
 
-      const response = await fetch(`/api/vtu-papers?${params.toString()}`)
-      const data = await response.json()
 
-      if (data.success) {
-        setVtuPapers(data.papers)
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch VTU question papers",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Network error while fetching VTU papers",
-        variant: "destructive",
-      })
-    } finally {
-      setVtuLoading(false)
-    }
-  }
 
-  useEffect(() => {
-    fetchVTUPapers()
-  }, [semesterFilter, branchFilter, yearFilter, monthFilter, searchQuery])
-
-  const handleVTUDownload = async (paper: VTUPaper) => {
-    setDownloadingId(paper.id)
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      toast({
-        title: "Download Started",
-        description: `${paper.subject_name} question paper is being downloaded`,
-      })
-
-      setVtuPapers((prev) => prev.map((p) => (p.id === paper.id ? { ...p, download_count: p.download_count + 1 } : p)))
-    } catch (error) {
-      toast({
-        title: "Download Failed",
-        description: "Unable to download the question paper. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setDownloadingId(null)
-    }
-  }
 
   const addComment = async (noteId: string) => {
     if (!newComment.trim()) return
@@ -293,7 +218,7 @@ export default function QuestionPapersPage() {
         >
           <h1 className="text-4xl font-bold text-black dark:text-white mb-2">Question Papers</h1>
           <p className="text-zinc-600 dark:text-zinc-400">
-            Access previous year question papers and official VTU papers
+            Access previous year question papers from our community
           </p>
         </motion.div>
 
@@ -392,23 +317,22 @@ export default function QuestionPapersPage() {
         </motion.div>
 
         {/* Tabs for different paper types */}
-        <Tabs defaultValue="community" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8 bg-zinc-100 dark:bg-zinc-900">
-            <TabsTrigger value="community" className="rounded-xl">
+        <div className="w-full">
+          <div className="mb-8 text-center">
+            <h2 className="text-2xl font-bold text-black dark:text-white mb-2">
               Community Papers ({filteredPapers.length})
-            </TabsTrigger>
-            <TabsTrigger value="official" className="rounded-xl">
-              Official VTU Papers ({vtuPapers.length})
-            </TabsTrigger>
-          </TabsList>
+            </h2>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Question papers shared by our community members
+            </p>
+          </div>
 
-          {/* Community Papers Tab */}
-          <TabsContent value="community">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+          {/* Community Papers */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
               <Card className="border-zinc-200 dark:border-zinc-800 overflow-hidden">
                 <Table>
                   <TableHeader>
@@ -519,136 +443,14 @@ export default function QuestionPapersPage() {
                 </motion.div>
               )}
             </motion.div>
-          </TabsContent>
 
-          {/* Official VTU Papers Tab */}
-          <TabsContent value="official">
-            {vtuLoading && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="border-zinc-200 dark:border-zinc-800 animate-pulse">
-                    <CardContent className="p-6">
-                      <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded mb-2"></div>
-                      <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded mb-4"></div>
-                      <div className="h-8 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-
-            {!vtuLoading && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {vtuPapers.map((paper, index) => (
-                  <motion.div
-                    key={paper.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 * index }}
-                  >
-                    <Card className="group border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white transition-all duration-300 overflow-hidden h-full flex flex-col">
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge className={getExamTypeColor(paper.exam_type)}>{paper.exam_type}</Badge>
-                          {paper.is_official && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300"
-                            >
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Official
-                            </Badge>
-                          )}
-                        </div>
-
-                        <CardTitle className="text-lg line-clamp-2 text-black dark:text-white">
-                          {paper.subject_name}
-                        </CardTitle>
-
-                        <CardDescription className="font-mono text-sm">
-                          {paper.subject_code} • Semester {paper.semester}
-                        </CardDescription>
-                      </CardHeader>
-
-                      <CardContent className="flex-1 flex flex-col">
-                        <div className="space-y-3 mb-4">
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400">
-                              <Calendar className="h-4 w-4" />
-                              <span>Exam: {formatDate(paper.exam_date)}</span>
-                            </div>
-                            <Badge variant="outline" className="border-zinc-200 dark:border-zinc-800">
-                              {paper.branch}
-                            </Badge>
-                          </div>
-
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400">
-                              <Clock className="h-4 w-4" />
-                              <span>Added: {formatDate(paper.uploaded_date)}</span>
-                            </div>
-                            <span className="text-zinc-500 dark:text-zinc-400">{paper.file_size}</span>
-                          </div>
-
-                          <div className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400">
-                            <Users className="h-4 w-4" />
-                            <span>{paper.download_count.toLocaleString()} downloads</span>
-                          </div>
-                        </div>
-
-                        <div className="mt-auto space-y-2">
-                          <Button
-                            onClick={() => handleVTUDownload(paper)}
-                            disabled={downloadingId === paper.id}
-                            className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 rounded-lg"
-                          >
-                            {downloadingId === paper.id ? (
-                              <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                                Downloading...
-                              </>
-                            ) : (
-                              <>
-                                <Download className="h-4 w-4 mr-2" />
-                                Download PDF
-                              </>
-                            )}
-                          </Button>
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full rounded-lg border-zinc-200 dark:border-zinc-800 bg-transparent"
-                            onClick={() => window.open(paper.file_url, "_blank")}
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            View Online
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {!vtuLoading && vtuPapers.length === 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-                <FileText className="h-12 w-12 text-zinc-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-black dark:text-white mb-2">No Official Papers Found</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
-                  Try adjusting your search criteria or filters to find more papers.
-                </p>
-              </motion.div>
-            )}
-          </TabsContent>
-        </Tabs>
+        </div>
 
         {/* Copyright Footer */}
         <footer className="py-3 md:py-6 px-2 md:px-4 border-t border-zinc-200 dark:border-zinc-800 mt-12">
           <div className="max-w-6xl mx-auto text-center">
             <p className="text-xs text-zinc-600 dark:text-zinc-400">
-              © 2024 VTU Vault. Created by <span className="font-semibold text-black dark:text-white">Afzal</span>. All
+              © 2024 IgniteVidya. Created by <span className="font-semibold text-black dark:text-white">Team IgniteVidya</span>. All
               rights reserved.
             </p>
           </div>
