@@ -1707,12 +1707,14 @@ export default function HomePage() {
       </section>
 
       {/* Copyright Footer */}
-      <footer className="py-3 md:py-6 px-2 md:px-4 border-t border-zinc-200 dark:border-zinc-800 mb-20">
+      <footer className="py-6 md:py-8 px-4 md:px-6 border-t border-zinc-200 dark:border-zinc-800 mb-20 bg-gradient-to-r from-blue-50 to-green-50 dark:from-zinc-900 dark:to-zinc-800">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            2024 Apna Parivar. Created by{" "}
-            <span className="font-semibold text-black dark:text-white">
-              Apna Parivar Team
+          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 tracking-wide">
+            © 2024 IgniteVidya Family. Crafted with{" "}
+            <span className="text-red-500 animate-pulse">❤️</span>{" "}
+            by{" "}
+            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 dark:from-blue-400 dark:to-green-400">
+              IgniteVidya Team
             </span>
             . All rights reserved.
           </p>
