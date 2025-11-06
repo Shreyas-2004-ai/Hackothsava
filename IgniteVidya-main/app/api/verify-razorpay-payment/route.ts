@@ -3,6 +3,10 @@ import crypto from 'crypto';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
+export async function GET() {
+  return NextResponse.json({ message: 'Razorpay payment verification endpoint' });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
@@ -19,10 +23,19 @@ export async function POST(request: NextRequest) {
       planId,
     } = await request.json();
 
+    // Check if Razorpay secret is available and not placeholder value
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keySecret || keySecret.includes('your_razorpay_secret')) {
+      return NextResponse.json(
+        { success: false, error: 'Razorpay credentials not configured. Please set up your Razorpay API keys.' },
+        { status: 503 }
+      );
+    }
+
     // Verify signature
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+      .createHmac('sha256', keySecret)
       .update(body.toString())
       .digest('hex');
 
